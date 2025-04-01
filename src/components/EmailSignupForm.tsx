@@ -33,11 +33,23 @@ export const EmailSignupForm = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
+      console.log('Attempting to insert email:', email);
+      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      
+      const { data, error } = await supabase
         .from('email_subscribers')
-        .insert([{ email }]);
+        .insert([{ email }])
+        .select();
+
+      console.log('Supabase response:', { data, error });
 
       if (error) {
+        console.error('Supabase error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         throw error;
       }
 

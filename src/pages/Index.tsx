@@ -52,8 +52,8 @@ const Index = () => {
               &copy; {new Date().getFullYear()} DreamLab. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="https://x.com/flossverse" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                Flossverse
+              <a href="https://bsky.app/profile/thedreamlab.bsky.social" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                Bluesky
               </a>
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
                 Instagram
