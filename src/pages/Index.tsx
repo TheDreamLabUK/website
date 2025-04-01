@@ -58,15 +58,20 @@ const Index = () => {
             <p className="text-sm text-muted-foreground">
               &copy; {new Date().getFullYear()} The DreamLab UK. All rights reserved.
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="https://bsky.app/profile/thedreamlab.bsky.social" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                Bluesky
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                Instagram
-              </a>
-              <a href="https://www.linkedin.com/company/dreamlabinstitute/?" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                LinkedIn
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+              <div className="flex space-x-6">
+                <a href="https://bsky.app/profile/thedreamlab.bsky.social" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Bluesky
+                </a>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Instagram
+                </a>
+                <a href="https://www.linkedin.com/company/dreamlabinstitute/?" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                  LinkedIn
+                </a>
+              </div>
+              <a href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Privacy Policy
               </a>
             </div>
           </div>
