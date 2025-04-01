@@ -3,23 +3,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 // --- Constants ---
 const SUCCESS_MESSAGE = "Thanks for signing up! We'll be in touch soon.";
 const ERROR_MESSAGE_INVALID_EMAIL = "Please enter a valid email address";
+const ERROR_MESSAGE_SUBMISSION = "Failed to sign up. Please try again later.";
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/; // Basic email format regex
 const SUBMITTING_TEXT = "Submitting...";
 const SUBMIT_TEXT = "Sign Up";
 
 /**
  * Renders an email signup form.
- * Handles basic client-side validation and simulated submission with toasts.
+ * Handles basic client-side validation and submission to Supabase.
  */
 export const EmailSignupForm = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate email format
@@ -30,15 +32,23 @@ export const EmailSignupForm = () => {
 
     setIsSubmitting(true);
 
-    // TODO: Replace with actual API call
-    // Simulated API call for demonstration
-    console.log("Simulating signup for:", email);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const { error } = await supabase
+        .from('email_subscribers')
+        .insert([{ email }]);
+
+      if (error) {
+        throw error;
+      }
+
       setEmail("");
       toast.success(SUCCESS_MESSAGE);
-      // TODO: Add error handling for real API calls
-    }, 1000); // Simulate 1 second network delay
+    } catch (error) {
+      console.error('Error submitting email:', error);
+      toast.error(ERROR_MESSAGE_SUBMISSION);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
