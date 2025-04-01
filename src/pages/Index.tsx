@@ -2,6 +2,7 @@ import { BuckyBall } from "@/components/BuckyBall";
 import { EmailSignupForm } from "@/components/EmailSignupForm";
 import { Header } from "@/components/Header";
 import skillsData from "@/data/skills.json";
+import { ChevronDown } from "lucide-react";
 
 /**
  * Represents the main index/home page of the website.
@@ -32,6 +33,12 @@ const Index = () => {
             Bespoke Creative Technology and Training
           </p>
         </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
+          <ChevronDown className="w-10 h-10 text-muted-foreground/70 hover:text-foreground transition-colors cursor-pointer" 
+            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })} />
+        </div>
       </section>
       
       {/* Email signup section */}
@@ -49,7 +56,7 @@ const Index = () => {
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-center border-t border-muted pt-8">
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} DreamLab. All rights reserved.
+              &copy; {new Date().getFullYear()} The DreamLab UK. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="https://bsky.app/profile/thedreamlab.bsky.social" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
