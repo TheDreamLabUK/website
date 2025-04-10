@@ -12,8 +12,36 @@ function copySpecialFiles() {
       // Ensure .nojekyll and CNAME files are copied to the build output
       if (fs.existsSync('.nojekyll')) fs.copyFileSync('.nojekyll', 'dist/.nojekyll');
       if (fs.existsSync('CNAME')) fs.copyFileSync('CNAME', 'dist/CNAME');
+      
+      // Copy the data directory to the build output
+      copyDataDirectory('src/data', 'dist/data');
     }
   };
+}
+
+// Helper function to recursively copy a directory
+function copyDataDirectory(source: string, destination: string) {
+  // Create destination directory if it doesn't exist
+  if (!fs.existsSync(destination)) {
+    fs.mkdirSync(destination, { recursive: true });
+  }
+  
+  // Get all files in the source directory
+  const files = fs.readdirSync(source);
+  
+  // Copy each file to the destination directory
+  for (const file of files) {
+    const sourcePath = path.join(source, file);
+    const destPath = path.join(destination, file);
+    
+    // If directory, recursively copy its contents
+    if (fs.statSync(sourcePath).isDirectory()) {
+      copyDataDirectory(sourcePath, destPath);
+    } else {
+      // Copy file
+      fs.copyFileSync(sourcePath, destPath);
+    }
+  }
 }
 
 // https://vitejs.dev/config/
