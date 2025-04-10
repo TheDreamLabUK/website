@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
+import Team from "./pages/Team";
+import Work from "./pages/Work";
+import Contact from "./pages/Contact";
 
 // Initialize React Query client
 const queryClient = new QueryClient();
@@ -28,6 +31,12 @@ const App = () => (
         <Routes>
           {/* Main index route */}
           <Route path="/" element={<Index />} />
+          {/* Team page route */}
+          <Route path="/team" element={<Team />} />
+          {/* Previous Work route */}
+          <Route path="/work" element={<Work />} />
+          {/* Contact form route */}
+          <Route path="/contact" element={<Contact />} />
           {/* Privacy Policy route */}
           <Route path="/privacy" element={<Privacy />} />
           {/* --- Add Custom Routes Above This Line --- */}
