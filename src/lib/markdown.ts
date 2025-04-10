@@ -8,9 +8,9 @@
  * @returns An object with headline and fullDetails properties
  */
 export function parseTeamMarkdown(markdown: string) {
-  // Extract headline
-  const headlineMatch = markdown.match(/# (.*?)\n/);
-  const headline = headlineMatch ? headlineMatch[1] : "";
+  // Extract the actual name/title (line after the # heading)
+  const nameMatch = markdown.match(/# .*?\n\n(.*?)\n/);
+  const headline = nameMatch ? nameMatch[1] : "";
   
   // Extract full details (everything after ## Full Details)
   const fullDetailsMatch = markdown.match(/## Full Details\n\n([\s\S]*)/);
