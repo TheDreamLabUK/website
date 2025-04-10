@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { TeamMember } from "@/components/TeamMember";
-import { parseTeamMarkdown, fetchMarkdown } from "@/lib/markdown";
+import { parseTeamMarkdown, fetchMarkdown, getDataPath } from "@/lib/markdown";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 
@@ -29,12 +29,13 @@ const Team = () => {
         const loadedMembers = await Promise.all(
           memberIds.map(async (id) => {
             // Fetch and parse markdown
-            const markdownText = await fetchMarkdown(`/src/data/team/${id}.md`);
+            const markdownPath = `/src/data/team/${id}.md`;
+            const markdownText = await fetchMarkdown(markdownPath);
             const { headline, fullDetails } = parseTeamMarkdown(markdownText);
             
             return {
               id,
-              imageSrc: `/src/data/team/${id}.png`,
+              imageSrc: getDataPath(`/src/data/team/${id}.png`),
               headline,
               fullDetails
             };

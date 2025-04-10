@@ -20,17 +20,31 @@ export function parseTeamMarkdown(markdown: string) {
 }
 
 /**
+ * Returns the correct path for data files based on the environment
+ * @param path Path starting with /src/data/ or /data/
+ * @returns Correct path for the current environment
+ */
+export function getDataPath(path: string): string {
+  // For production builds, use /data/ instead of /src/data/
+  if (import.meta.env.PROD) {
+    return path.replace(/^\/src\/data\//, '/data/');
+  }
+  return path;
+}
+
+/**
  * Fetches and parses a markdown file
  * @param path Path to the markdown file
  * @returns The parsed markdown content
  */
 export async function fetchMarkdown(path: string) {
   try {
-    const response = await fetch(path);
+    const adjustedPath = getDataPath(path);
+    const response = await fetch(adjustedPath);
     const text = await response.text();
     return text;
   } catch (error) {
-    console.error("Error fetching markdown:", error);
+    console.error("Error fetching markdown:", error, "Path attempted:", getDataPath(path));
     return "";
   }
 } 
