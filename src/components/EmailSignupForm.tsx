@@ -43,31 +43,20 @@ export const EmailSignupForm = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('Attempting to insert subscriber:', { email, name, hasConsent });
-      
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('email_subscribers')
-        .upsert([{ 
-          email,
+        .upsert({
+          email: email.trim().toLowerCase(), // email is now the primary key
           name: name.trim() || null,
           has_consent: hasConsent,
-          subscribed_at: new Date().toISOString(),
           source: 'website_signup_form'
-        }], {
-          onConflict: 'email',
-          ignoreDuplicates: false // Update existing records
-        })
-        .select();
-
-      console.log('Supabase response:', { data, error });
+          // subscribed_at will be set automatically by the default value
+        }, {
+          onConflict: 'email'
+        });
 
       if (error) {
-        console.error('Supabase error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
+        console.error('Supabase error:', error);
         throw error;
       }
 
