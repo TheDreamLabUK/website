@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { TeamMember } from "@/components/TeamMember";
-import { parseTeamMarkdown, fetchMarkdown, getDataPath } from "@/lib/markdown";
+import { parseTeamMarkdown } from "@/lib/markdown";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 
@@ -21,28 +21,44 @@ const Team = () => {
     const loadTeamMembers = async () => {
       setLoading(true);
       try {
-        // Get team member IDs (01-25)
-        const memberIds = Array.from({ length: 25 }, (_, i) => 
-          (i + 1).toString().padStart(2, '0')
-        );
+        // Hardcode the team member IDs since we know them
+        const memberIds = ['01', '02', '03', '04', '05'];
         
         const loadedMembers = await Promise.all(
           memberIds.map(async (id) => {
-            // Fetch and parse markdown
-            const markdownPath = `/src/data/team/${id}.md`;
-            const markdownText = await fetchMarkdown(markdownPath);
-            const { headline, fullDetails } = parseTeamMarkdown(markdownText);
-            
-            return {
-              id,
-              imageSrc: getDataPath(`/src/data/team/${id}.png`),
-              headline,
-              fullDetails
-            };
+            try {
+              // Fetch markdown content
+              const markdownResponse = await fetch(`/data/team/${id}.md`);
+              if (!markdownResponse.ok) {
+                throw new Error(`Failed to fetch markdown for member ${id}`);
+              }
+              
+              const markdownText = await markdownResponse.text();
+              const { headline, fullDetails } = parseTeamMarkdown(markdownText);
+
+              // Verify the image exists
+              const imageResponse = await fetch(`/data/team/${id}.png`);
+              if (!imageResponse.ok) {
+                throw new Error(`Failed to fetch image for member ${id}`);
+              }
+
+              return {
+                id,
+                imageSrc: `/data/team/${id}.png`,
+                headline,
+                fullDetails
+              };
+            } catch (error) {
+              console.error(`Error loading team member ${id}:`, error);
+              return null;
+            }
           })
         );
-        
-        setTeamMembers(loadedMembers);
+
+        const validMembers = loadedMembers.filter(Boolean) as TeamMemberData[];
+        console.log("Loaded members:", validMembers);
+
+        setTeamMembers(validMembers);
       } catch (error) {
         console.error("Error loading team members:", error);
       } finally {
