@@ -6,6 +6,10 @@ DreamLab website landing page - A React + Vite application with ThreeJS integrat
 
 Visit the live site at: [https://thedreamlab.uk](https://thedreamlab.uk)
 
+## Edit Your Team Details
+
+Create or modify files in /public/data/team/ to add yourself
+
 ## 🛠️ Technologies
 
 - React 18

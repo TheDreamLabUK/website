@@ -3,17 +3,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The DreamLab Prelaunch</title>
-    <meta name="description" content="Creative Technologist Collective exploring the intersection of art, design, and cutting-edge technology" />
-    <meta name="author" content="The DreamLab Prelaunch" />
-
-    <meta property="og:title" content="The DreamLab Prelaunch" />
-    <meta property="og:description" content="Creative Technologist Collective exploring the intersection of art, design, and cutting-edge technology" />
-    <meta property="og:type" content="website" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@dreamlab_prelaunch" />
+    <title>DreamLab</title>
+    <script>
+      (function() {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.pathname) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
 
   <body>

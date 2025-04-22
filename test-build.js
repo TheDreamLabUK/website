@@ -25,3 +25,10 @@ if (distFiles.includes('CNAME')) {
 } else {
   console.log('❌ CNAME file is missing');
 }
+
+// Check for 404.html
+if (distFiles.includes('404.html')) {
+  console.log('✅ 404.html file was successfully copied');
+} else {
+  console.log('❌ 404.html file is missing');
+}
