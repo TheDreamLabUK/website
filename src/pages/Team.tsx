@@ -21,39 +21,50 @@ const Team = () => {
     const loadTeamMembers = async () => {
       setLoading(true);
       try {
-        // Hardcode the team member IDs since we know them
-        const memberIds = ['01', '02', '03', '04', '05'];
+        // Dynamically try to load team members with sequential IDs
+        const maxMembersToTry = 20; // Try up to 20 team members
+        const memberPromises = [];
         
-        const loadedMembers = await Promise.all(
-          memberIds.map(async (id) => {
-            try {
-              // Fetch markdown content
-              const markdownResponse = await fetch(`/data/team/${id}.md`);
-              if (!markdownResponse.ok) {
-                throw new Error(`Failed to fetch markdown for member ${id}`);
-              }
-              
-              const markdownText = await markdownResponse.text();
-              const { headline, fullDetails } = parseTeamMarkdown(markdownText);
+        // Try to load each potential team member
+        for (let i = 1; i <= maxMembersToTry; i++) {
+          const id = i.toString().padStart(2, '0'); // Format as 01, 02, etc.
+          memberPromises.push(
+            (async () => {
+              try {
+                // Try to fetch the markdown file
+                const markdownResponse = await fetch(`/data/team/${id}.md`);
+                if (!markdownResponse.ok) {
+                  // If markdown file doesn't exist, skip this member
+                  return null;
+                }
+                
+                const markdownText = await markdownResponse.text();
+                const { headline, fullDetails } = parseTeamMarkdown(markdownText);
 
-              // Verify the image exists
-              const imageResponse = await fetch(`/data/team/${id}.png`);
-              if (!imageResponse.ok) {
-                throw new Error(`Failed to fetch image for member ${id}`);
-              }
+                // Try to fetch the image
+                const imageResponse = await fetch(`/data/team/${id}.png`);
+                if (!imageResponse.ok) {
+                  console.warn(`Image not found for team member ${id}, but markdown exists`);
+                  // You could return null here if you want to require both files,
+                  // or continue with a placeholder image
+                  return null;
+                }
 
-              return {
-                id,
-                imageSrc: `/data/team/${id}.png`,
-                headline,
-                fullDetails
-              };
-            } catch (error) {
-              console.error(`Error loading team member ${id}:`, error);
-              return null;
-            }
-          })
-        );
+                return {
+                  id,
+                  imageSrc: `/data/team/${id}.png`,
+                  headline,
+                  fullDetails
+                };
+              } catch (error) {
+                console.error(`Error loading team member ${id}:`, error);
+                return null;
+              }
+            })()
+          );
+        }
+        
+        const loadedMembers = await Promise.all(memberPromises);
 
         const validMembers = loadedMembers.filter(Boolean) as TeamMemberData[];
         console.log("Loaded members:", validMembers);
