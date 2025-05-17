@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import workshopList from '@/data/workshop-list.json';
 import { Link } from "react-router-dom";
 
 /**
@@ -49,6 +54,25 @@ export const Header = () => {
             <DropdownMenuItem asChild>
               <Link to="/team" className="w-full">Team</Link>
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <span>Workshops</span>
+                {/* ChevronRight removed, shadcn/ui provides its own */}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-52"> {/* Adjusted width */}
+                {workshopList.length > 0 ? (
+                  workshopList.map(workshop => (
+                    <DropdownMenuItem key={workshop.id} asChild>
+                      <Link to={workshop.path} className="w-full">{workshop.name}</Link>
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled>No workshops available</DropdownMenuItem>
+                )}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/work" className="w-full">Previous Work</Link>
             </DropdownMenuItem>

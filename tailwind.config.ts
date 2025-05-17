@@ -19,6 +19,71 @@ export default {
 			}
 		},
 		extend: {
+		    typography: (theme) => ({
+		      DEFAULT: {
+		        css: {
+		          color: theme('colors.slate.700'), // Default text for prose on light bg
+		          a: {
+		            color: theme('colors.blue.600'),
+		            '&:hover': {
+		              color: theme('colors.blue.700'),
+		            },
+		          },
+		          h1: { color: theme('colors.slate.900') },
+		          h2: { color: theme('colors.slate.800') },
+		          h3: { color: theme('colors.slate.800') },
+		          h4: { color: theme('colors.slate.700') },
+		          strong: { color: theme('colors.slate.900') },
+		          code: {
+		            color: theme('colors.pink.600'),
+		            backgroundColor: theme('colors.slate.100'),
+		            padding: '0.2em 0.4em',
+		            borderRadius: '0.25rem',
+		          },
+		          pre: {
+		            color: theme('colors.slate.200'), // Light text for code blocks
+		            backgroundColor: theme('colors.slate.800'), // Dark bg for code blocks
+		          },
+		          blockquote: {
+		            color: theme('colors.slate.600'),
+		            borderLeftColor: theme('colors.slate.300'),
+		          },
+		          // Ensure list markers are also dark
+		          'ul > li::before': { backgroundColor: theme('colors.slate.500') },
+		          'ol > li::before': { color: theme('colors.slate.500') },
+		        },
+		      }, // DEFAULT object closes
+		        invert: {
+		          css: {
+		            color: theme('colors.slate.300'), // Lighter base text for dark mode
+		            a: {
+		              color: theme('colors.blue.400'),
+		              '&:hover': {
+		                color: theme('colors.blue.300'),
+		              },
+		            },
+		            h1: { color: theme('colors.slate.100') },
+		            h2: { color: theme('colors.slate.200') },
+		            h3: { color: theme('colors.slate.200') },
+		            h4: { color: theme('colors.slate.300') },
+		            strong: { color: theme('colors.slate.100') },
+		            code: { // For inline code in dark mode
+		              color: theme('colors.pink.400'),
+		              backgroundColor: theme('colors.slate.800'),
+		              padding: '0.2em 0.4em',
+		              borderRadius: '0.25rem',
+		            },
+		            // 'pre' styles from DEFAULT are already dark-mode friendly (slate.200 text on slate.800 bg)
+		            // and prose-invert typically doesn't re-invert them.
+		            blockquote: {
+		              color: theme('colors.slate.400'),
+		              borderLeftColor: theme('colors.slate.700'),
+		            },
+		            'ul > li::before': { backgroundColor: theme('colors.slate.600') }, // Ensure markers are visible
+		            'ol > li::before': { color: theme('colors.slate.400') },
+		          }
+		        }
+		    }), // typography theme function's return object closes
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -124,5 +189,5 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;
