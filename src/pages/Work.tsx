@@ -1,41 +1,38 @@
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 
+interface WorkItem {
+  id: string;
+  title: string;
+  client: string;
+  year: string;
+  description: string;
+  imageUrl: string;
+}
+
 const Work = () => {
-  // Sample previous work data
-  const previousWorks = [
-    {
-      id: "work-1",
-      title: "Interactive Art Installation",
-      client: "National Gallery",
-      year: "2023",
-      description: "An immersive digital experience that transforms classic paintings into interactive elements that respond to visitor movement.",
-      imageUrl: "https://placehold.co/600x400/1a1a2e/ffffff?text=Art+Installation"
-    },
-    {
-      id: "work-2",
-      title: "VR Training Platform",
-      client: "Medical Research Institute",
-      year: "2022",
-      description: "A virtual reality platform for medical students to practice surgical procedures in a risk-free environment.",
-      imageUrl: "https://placehold.co/600x400/1a1a2e/ffffff?text=VR+Training"
-    },
-    {
-      id: "work-3",
-      title: "Interactive Data Visualization",
-      client: "Climate Research Center",
-      year: "2022",
-      description: "A real-time data visualization dashboard that helps researchers understand complex climate patterns.",
-      imageUrl: "https://placehold.co/600x400/1a1a2e/ffffff?text=Data+Visualization"
-    },
-    {
-      id: "work-4",
-      title: "AR Educational App",
-      client: "National Science Museum",
-      year: "2021",
-      description: "An augmented reality application that brings scientific concepts to life for museum visitors.",
-      imageUrl: "https://placehold.co/600x400/1a1a2e/ffffff?text=AR+Education"
-    }
-  ];
+  const [previousWorks, setPreviousWorks] = useState<WorkItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadWorkData = async () => {
+      try {
+        const response = await fetch("/data/showcase/manifest.json");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch work data: ${response.status}`);
+        }
+        const data = await response.json();
+        if (Array.isArray(data.projects)) {
+          setPreviousWorks(data.projects);
+        }
+      } catch (e) {
+        console.error("Error loading work data:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadWorkData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -54,31 +51,37 @@ const Work = () => {
       {/* Work showcase */}
       <section className="py-12">
         <div className="container">
-          <div className="space-y-16">
-            {previousWorks.map((work) => (
-              <div 
-                key={work.id} 
-                className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
-              >
-                <div className={`rounded-lg overflow-hidden ${work.id.endsWith('2') || work.id.endsWith('4') ? 'md:order-2' : ''}`}>
-                  <img 
-                    src={work.imageUrl} 
-                    alt={work.title} 
-                    className="w-full h-auto" 
-                  />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-semibold mb-2">{work.title}</h2>
-                  <div className="flex items-center text-sm text-muted-foreground mb-4">
-                    <span>{work.client}</span>
-                    <span className="mx-2">•</span>
-                    <span>{work.year}</span>
+          {loading ? (
+            <div className="text-center py-12">Loading projects...</div>
+          ) : previousWorks.length === 0 ? (
+            <div className="text-center py-12">No projects found.</div>
+          ) : (
+            <div className="space-y-16">
+              {previousWorks.map((work) => (
+                <div
+                  key={work.id}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
+                >
+                  <div className={`rounded-lg overflow-hidden ${work.id.endsWith('2') || work.id.endsWith('4') ? 'md:order-2' : ''}`}>
+                    <img
+                      src={work.imageUrl}
+                      alt={work.title}
+                      className="w-full h-auto"
+                    />
                   </div>
-                  <p className="text-base">{work.description}</p>
+                  <div>
+                    <h2 className="text-2xl font-semibold mb-2">{work.title}</h2>
+                    <div className="flex items-center text-sm text-muted-foreground mb-4">
+                      <span>{work.client}</span>
+                      <span className="mx-2">•</span>
+                      <span>{work.year}</span>
+                    </div>
+                    <p className="text-base">{work.description}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
       
