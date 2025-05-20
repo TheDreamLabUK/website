@@ -1,0 +1,13 @@
+collections:
+  - name: showcase
+    label: Showcase
+    folder: public/data/showcase
+    format: json
+    path: manifest.json
+    fields:
+      - { name: id, label: ID }
+      - { name: title, label: Title }
+      - { name: client, label: Client }
+      - { name: year, label: Year }
+      - { name: description, label: Description, widget: textarea }
+      - { name: imageUrl, label: Image URL }

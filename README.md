@@ -10,6 +10,14 @@ Visit the live site at: [https://thedreamlab.uk](https://thedreamlab.uk)
 
 Create or modify files in /public/data/team/ to add yourself
 
+## Manage Previous Work
+
+Previous work items are stored in `/public/data/showcase/manifest.json`.
+The easiest way to update them is through [Pages CMS](https://app.pagescms.org),
+which commits changes directly to this repository. Connect your GitHub account,
+edit the entries in the "Showcase" collection, and your updates will be
+published automatically.
+
 ## 🛠️ Technologies
 
 - React 18
