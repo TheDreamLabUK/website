@@ -14,8 +14,9 @@ This guide will walk you through:
 4.  **Collaboration & Recovery:** Working with others and leveraging Git's power to experiment safely and recover from mistakes. ([See Chapter 4](./04_collaboration_recovery.md))
 5.  **GitHub Pages:** Hosting your own free portfolio or project websites directly from your repositories. ([See Chapter 5](./05_github_pages.md))
 6.  **AI-Powered Workflows:** Using tools like Roo Code within VS Code to accelerate your development, documentation, and creative processes. ([See Chapter 6](./06_ai_workflows_roo_code.md))
+*   Understanding context windows, token costs, and best practices for AI interaction ([See Chapter 6.5](./06_ai_workflows_roo_code.md#65-context-windows-cost--tool-comparison))
 7.  **Advanced Typesetting:** Setting up LaTeX with WSL2, TeXLive, and VS Code for professional document creation. ([See Chapter 8](./08_latex_wsl_vscode.md))
-8.  **Quick Reference:** A handy cheat sheet for common commands. ([See Chapter 9](./09_cheat_sheet.md))
+8.  **Context Management & Advanced Workflows:** Mastering AI interactions. ([See Chapter 9](./09_context_management.md))
 
 ## Philosophy
 
@@ -61,7 +62,7 @@ Let's begin this journey to unlock new potentials in your creative practice!
     *   Connecting VS Code to WSL2
     *   Setting up LaTeX Workshop
     *   Enhancing with Roo Code
-*   **Chapter 9: [Reference Cheat Sheet](./09_cheat_sheet.md)**
+*   **Chapter 9: [Context Management & Advanced Agent Workflows](./09_context_management.md)**
 
 ---
 
