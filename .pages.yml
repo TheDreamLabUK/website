@@ -1,0 +1,25 @@
+# .pages.yml
+# Configuration for cmspages to manage content in public/data/showcase
+
+collections:
+  - name: "showcase" # Name of the collection
+    label: "Showcase Projects" # Display label in the CMS
+    description: "Projects featured in the showcase."
+    files: # This collection is defined by one or more files
+      - name: "projects_list" # An internal name for this file configuration
+        label: "All Showcase Projects" # Label for this specific file in the CMS
+        file: "public/data/showcase/manifest.json" # Path to the data file
+        format: "json" # Data format
+        # Specifies that the 'projects' key in the JSON file contains the list of items
+        # and each item in that list has the following fields.
+        fields: # Fields for the top-level structure of manifest.json
+          - name: "projects" # This is the array key in manifest.json
+            label: "Projects"
+            widget: "list" # Indicates this field is a list of items
+            fields: # Fields for each item within the 'projects' list
+              - {label: "ID", name: "id", widget: "string", required: true, hint: "Unique identifier, e.g., work-1"}
+              - {label: "Title", name: "title", widget: "string", required: true}
+              - {label: "Client", name: "client", widget: "string"}
+              - {label: "Year", name: "year", widget: "string"} # Or number, depending on CMS capabilities
+              - {label: "Description", name: "description", widget: "text", required: true}
+              - {label: "Image URL", name: "imageUrl", widget: "string", hint: "URL of the project image"}
