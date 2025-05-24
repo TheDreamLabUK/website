@@ -28,7 +28,7 @@ Roo Code uses profiles to manage different AI configurations. Follow these steps
 
 5. **Set Rate Limit (Recommended):**
    - Set the rate limit to 6 seconds to minimise costs and remain within free usage limits.
-   - You can find the rate limits online. This is super important in order not to incur significant costs. [Check this frequently](https://ai.google.dev/gemini-api/docs/rate-limits)).
+   - You can find the rate limits online. This is super important in order not to incur significant costs. [Check this frequently](https://ai.google.dev/gemini-api/docs/rate-limits).
 
 6. **Save Configuration:**
    - Click "Save" or "Apply" to store your settings.
