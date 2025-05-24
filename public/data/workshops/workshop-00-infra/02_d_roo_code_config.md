@@ -24,10 +24,11 @@ Roo Code uses profiles to manage different AI configurations. Follow these steps
    - Paste the Google Cloud API key obtained in [Chapter 2c](./02_c_gcp_api_key.md).
 
 4. **Select AI Model:**
-   - Choose the most capable Gemini model available (e.g., "Gemini 2.5 Pro Preview").
+   - Choose the most capable Gemini model available with a sufficient free to use tier (e.g., "Gemini 2.5 Flash").
 
 5. **Set Rate Limit (Recommended):**
-   - Set the rate limit to `30000` milliseconds (30 seconds) to minimise costs and remain within free usage limits.
+   - Set the rate limit to 6 seconds to minimise costs and remain within free usage limits.
+   - You can find the rate limits online. This is super important in order not to incur significant costs. [Check this frequently](https://ai.google.dev/gemini-api/docs/rate-limits)).
 
 6. **Save Configuration:**
    - Click "Save" or "Apply" to store your settings.
