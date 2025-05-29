@@ -10,6 +10,7 @@ Admittedly, the initial configuration may appear somewhat arduous, involving mul
 - **Seamless Collaboration:** Engage effectively with peers and collaborators.
 - **Complimentary Web Hosting:** Effortlessly showcase your projects via [GitHub Pages](./05_github_pages.md).
 - **AI-Assisted Development:** Harness artificial intelligence to generate, elucidate, and refactor code, as well as to assist in documentation and strategic planning.
+- **Context Management for AI:** Understand context windows, token costs, and strategies for effective AI interaction ([See Chapter 6.5](./06_ai_workflows_roo_code.md#65-context-windows-cost--tool-comparison)).
 
 Consider this initial phase as constructing a sophisticated tooling pathway. Once established, it provides a cost-free yet exceptionally capable environment tailored for your creative and technical endeavours.
 

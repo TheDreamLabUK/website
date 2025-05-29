@@ -142,9 +142,14 @@ Amend the last commit (change message, add more files):
 # (Stage any additional files with 'git add' first if needed)
 git commit --amend -m "New or corrected commit message"
 ```
+### Cost Sanity Checks (Roo Code)
+
+- Watch the Roo Code context bar.
+- Reset context at ≈300k tokens or if logic degrades.
+- A rate-limited profile helps save on costs.
 
 This cheat sheet covers many of the day-to-day commands. For more advanced scenarios or detailed explanations, refer to the official [Git documentation](https://git-scm.com/doc) or use `git help <command>`.
 
 ---
 
-This concludes the main content of the tutorial. Happy coding and collaborating!
+Next: [Chapter 8: Advanced Typesetting: LaTeX with WSL2, TeXLive, and VS Code](./08_latex_wsl_vscode.md)

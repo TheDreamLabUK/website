@@ -87,6 +87,78 @@ This local integration, combined with robust version control via Git, creates a 
 
 The workshop concluded that this setup provides "the ultimate version of AI tool working." The learning curve involves "three months of frustrated, repeatedly asking it what the fuck's going on" but ultimately leads to a profound new way of working.
 
+## 6.5 Context Windows, Cost Management &amp; Tool Comparison
+
+Working effectively with AI coding assistants like Roo Code involves more than just writing good prompts; it requires a strategic approach to managing context, understanding costs, and choosing the right tools for the job. These applied best practices will help you maximise the benefits while minimising potential pitfalls like runaway spend or model confusion.
+
+### Understanding Context Windows and Token Costs (Insights 1, 9)
+
+AI models operate within a "context window"—a limit on the amount of information (text, code, etc.) they can consider at any one time. This context is measured in "tokens," which roughly correspond to words or parts of words. As your conversation with the AI grows, so does the context.
+
+**Key Practices:**
+
+*   **Monitor Actively:** Keep an eye on Roo Code's live "context bar" and, if applicable, the cost counter. This gives you real-time feedback on how much information the AI is processing and the associated expense.
+*   **Cost Mechanics:** Remember that token cost is roughly a product of the context size and the number of calls made to the AI. Many small, focused calls with a lean context are often more cost-effective and can lead to clearer, more accurate responses than a few calls with an enormous, sprawling context.
+*   **Strategic Reset/Summarise (Insight 8):** When the context window is about one-third full, or if you notice the AI's logic starting to degrade (e.g., it forgets previous instructions or generates less relevant output), it's time for a manual reset. You can either start a fresh session or ask the AI to summarise the current conversation, using that summary as the starting point for a new, leaner context.
+
+### The Two-Profile Strategy for Cost Control (Insight 2)
+
+A practical way to manage costs, especially when using models with per-token pricing, is the "two-profile" strategy within Roo Code:
+
+&gt; **Note: The Rate-Limited vs. Unlimited Profile Trick**
+&gt;
+&gt; Configure two distinct profiles in Roo Code:
+&gt; 1.  **"Rate-Limited Daily Driver":** Set this profile to use a cost-effective model (like a free-tier option if available, or a less expensive model) and enable a significant rate limit (e.g., 30-60 seconds between calls). This is your go-to for routine tasks, explanations, and general assistance, helping you stay within free-tier limits or keep costs very low.
+&gt; 2.  **"Unlimited Creative Burst":** Configure this profile with your most capable model (e.g., Gemini 2.5 Pro) and *no rate limit* (or a very short one). Reserve this profile for intensive tasks like generating large codebases, complex refactoring, or deep ideation sessions where you need the AI's full power without interruption. Actively monitor the cost ticker when using this profile.
+&gt;
+&gt; By switching between these profiles, you can balance capability with cost-effectiveness.
+
+### Tooling Choices: Roo Code vs. Cursor (Insight 3)
+
+While various AI coding tools exist, understanding their differences in transparency and control is crucial. Here's a comparison between Roo Code (as used in this workshop, typically with a user-provided API key and direct model access) and a tool like Cursor:
+
+| Feature             | Roo Code (with direct model access)                                  | Cursor (typical behaviour)                                       |
+| ------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **Context Display** | Explicit context bar, showing token count.                           | Often opaque; context size not always clear.                     |
+| **Cost Tracking**   | Direct cost display (if API provides it &amp; profile is un-rate-limited). | Hidden; costs are part of a subscription or abstracted.          |
+| **Prompting**       | Plain-text prompts, direct interaction with the chosen model.        | May involve hidden pre-prompts or system-level instructions.     |
+| **RAG**             | No hidden Retrieval Augmented Generation (RAG) by default. User controls what context is provided. | Often includes built-in RAG, automatically pulling from project files, which can be helpful but also opaque. |
+| **Transparency**    | High: User knows what model is used, what context is sent, and (often) the cost. | Lower: Internal workings, model choices, and exact context can be less visible. |
+| **Control**         | High: User directly manages API keys, model selection, and context.  | Moderate: More "managed" experience, less direct control over underlying AI. |
+
+Choosing the right tool depends on your needs. Roo Code, when configured directly, offers greater transparency and control, which is beneficial for learning the nuances of AI interaction and managing spend. Tools like Cursor might offer a more streamlined, "it just works" experience but with less insight into the underlying mechanics.
+
+### Effective Prompting with the Tree-plus-Docs Pattern (Insight 4)
+
+To minimise AI "hallucinations" (generating incorrect or irrelevant information), avoid duplicate directory creation, and ensure the AI works with the most current information, use the "Tree-plus-Docs" pattern for your prompts, especially when asking for file modifications or project-level changes:
+
+1.  **Provide the Directory Tree:** Use a command like `tree -L 2` (or a similar representation) to show the AI the current structure of the relevant part of your project.
+2.  **Include Key Document Snippets:** Paste in the most relevant sections of any files the AI needs to understand or modify. Don't assume it remembers everything from previous turns.
+3.  **Be Specific about the Action:** Clearly state what you want the AI to do with this information.
+
+This focused approach provides a narrow, deterministic context for each significant request.
+
+### The Core Interaction Loop: Tree → Prompt → Reset (Insights 1, 8, 10)
+
+A sustainable workflow for complex tasks often involves a loop:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant AI (Roo Code)
+    User-&gt;&gt;AI: Provide Project Tree + Key Docs Snippets
+    User-&gt;&gt;AI: Specific Prompt/Task (e.g., "Add feature X to file Y.md")
+    AI--&gt;&gt;User: Generates Code/Text/Response
+    User-&gt;&gt;User: Review &amp; Integrate Changes (Commit with Git!)
+    User-&gt;&gt;User: Monitor Context Size / Cost
+    alt Context Full or Logic Degrades
+        User-&gt;&gt;AI: "Summarise our conversation" OR Start Fresh Session
+        User-&gt;&gt;User: Reset/Update Context
+    end
+    User-&gt;&gt;AI: (Repeat with new prompt or refined task)
+```
+
+This iterative cycle, combined with vigilant context management and version control, forms the backbone of effective AI-assisted development. If the AI seems lost or is producing unhelpful output, a good "debug" pattern (Insight 10) is to ask it: "Tell me about this project," providing the current file tree and key document snippets. The AI's summary can help you understand its current "mental model" of your project, allowing you to correct misunderstandings or provide better context for the next iteration.
 ---
 
-Next: [Chapter 8: Advanced Typesetting: LaTeX with WSL2, TeXLive, and VS Code](./08_latex_wsl_vscode.md)
+Next: [Chapter 7: Reference Cheat Sheet](./07_cheat_sheet.md)

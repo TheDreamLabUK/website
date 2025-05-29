@@ -58,8 +58,8 @@
       "title": "Chapter 8: Advanced Typesetting: LaTeX with WSL2, TeXLive, and VS Code"
     },
     {
-      "slug": "09_cheat_sheet.md",
-      "title": "Chapter 9: Reference Cheat Sheet"
+      "slug": "09_context_management.md",
+      "title": "Chapter 9: Context Management & Advanced Agent Workflows"
     }
   ]
 }

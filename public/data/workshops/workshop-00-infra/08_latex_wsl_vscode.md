@@ -184,4 +184,4 @@ This comprehensive LaTeX setup empowers you to create professional-quality docum
 
 ---
 
-Next: [Chapter 9: Reference Cheat Sheet](./09_cheat_sheet.md)
+Next: [Chapter 9: Context Management & Advanced Agent Workflows](./09_context_management.md)
