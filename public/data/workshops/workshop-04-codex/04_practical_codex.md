@@ -13,7 +13,7 @@ We will explore:
 *   [Intermediate Tasks](./04_b_intermediate_tasks.md): Bug fixing with stack traces, component refactoring, and adding unit tests.
 *   [Advanced Scenarios](./04_c_advanced_scenarios.md): Project scaffolding, pull request reviews, security audits, code transpilation, and generating SQL migrations.
 
-These examples will illustrate the progression from simple commands to more complex, multi-step interactions, highlighting how developers can grow from novice users to "hero" practitioners by mastering Codex's diverse capabilities.
+These examples will illustrate the progression from simple commands to more complex, multi-step interactions, highlighting how developers can grow from novice users to practitioners by mastering Codex's diverse capabilities.
 
 ---
 

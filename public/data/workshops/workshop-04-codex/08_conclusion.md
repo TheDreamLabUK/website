@@ -52,5 +52,3 @@ The field of AI and its application to software development is characterized by 
     *   Prioritise responsible AI practices in all development endeavours.
 
 By embracing OpenAI Codex as a sophisticated co-developer and committing to ongoing learning, software engineers can significantly enhance their capabilities, streamline their workflows, and position themselves at the forefront of an AI-driven future in technology.
-
-This marks the end of the "From Zero to Hero: Mastering OpenAI Codex" tutorial. We hope you found it informative and are inspired to explore the potential of AI in your own development work!

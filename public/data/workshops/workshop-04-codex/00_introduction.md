@@ -57,7 +57,7 @@ Whether you are looking to understand the fundamental capabilities of OpenAI Cod
 
 ## What Will You Learn?
 
-The objective of this tutorial is to offer a "zero to hero" path, covering:
+The objective of this tutorial is to offer a complete path, covering:
 
 1.  **Basics:** What Codex is and its different forms (Cloud Agent vs. CLI).
 2.  **Setup:** How to access and configure Codex tools.

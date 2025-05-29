@@ -1,4 +1,4 @@
-# From Zero to Hero: Mastering OpenAI Codex
+# Mastering OpenAI Codex
 
 Welcome to this comprehensive guide on OpenAI Codex! This tutorial aims to take you from the fundamentals of AI-powered software engineering to mastering the advanced capabilities of Codex, transforming how you approach coding tasks. Whether you're new to AI-assisted development or an experienced professional, this guide will equip you with the knowledge to effectively integrate Codex into your workflows.
 
