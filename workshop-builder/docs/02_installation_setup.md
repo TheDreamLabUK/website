@@ -1,8 +1,232 @@
 # 2. Installation and Setup
 
-This section guides you through the steps required to install and configure the Workshop Builder CLI tool with **OpenAI Codex Framework** integration on your local machine.
+This document outlines how to set up the Workshop Builder. The recommended method is using Docker, which provides a consistent and secure environment.
 
-## Prerequisites
+## Installation and Setup (Docker - Recommended)
+
+Running Workshop Builder inside a Docker container is the recommended method for security, consistency, and ease of setup. This leverages the `ghcr.io/openai/codex-universal` base image with enterprise-level security enhancements.
+
+```mermaid
+graph TB
+    %% Host System
+    subgraph HOST [🖥️ Host System]
+        direction TB
+        USER[👤 Developer]
+        SCRIPTS[📜 Docker Scripts<br/>build-docker.sh<br/>run-docker.sh]
+        COMPOSE[🐳 docker-compose.yml]
+        ENV[🔐 .env Configuration]
+    end
+    
+    %% Docker Infrastructure
+    subgraph DOCKER [🐳 Docker Infrastructure]
+        direction TB
+        
+        %% Build Process
+        subgraph BUILD [🔨 Multi-Stage Build]
+            direction LR
+            BUILDER[🏗️ Builder Stage<br/>Dependencies & Tools]
+            PROD[🚀 Production Stage<br/>Optimized Runtime]
+            BUILDER --> PROD
+        end
+        
+        %% Security Layer
+        subgraph SECURITY [🔒 Security Layer]
+            direction TB
+            NONROOT[👤 Non-root User<br/>workshop-user:1000]
+            CAPS[🛡️ Capability Restrictions<br/>--cap-drop=ALL]
+            READONLY[📁 Read-only Filesystem<br/>Secure tmpfs]
+            LIMITS[⚡ Resource Limits<br/>Memory: 2GB, CPU: 1.0]
+        end
+        
+        %% Runtime Container
+        CONTAINER[📦 Workshop Builder Container<br/>Secure Runtime Environment]
+    end
+    
+    %% External Services
+    subgraph EXTERNAL [🌐 External Services]
+        direction TB
+        GEMINI[🧠 Gemini Flash 2.5]
+        CODEX[🤖 OpenAI Codex]
+        GITHUB[🔗 GitHub API]
+    end
+    
+    %% File System
+    subgraph FILESYSTEM [📁 File System]
+        direction TB
+        WEBSITE[📂 Website Repository<br/>Mounted Volume]
+        WORKSHOPS[📚 Generated Workshops<br/>public/data/workshops/]
+        WEBSITE --> WORKSHOPS
+    end
+    
+    %% Flow Connections
+    USER --> SCRIPTS
+    USER --> COMPOSE
+    SCRIPTS --> BUILD
+    COMPOSE --> BUILD
+    ENV -.->|Configuration| CONTAINER
+    
+    BUILD --> SECURITY
+    SECURITY --> CONTAINER
+    
+    CONTAINER -.->|API Calls| EXTERNAL
+    CONTAINER -.->|File Operations| FILESYSTEM
+    
+    %% Styling
+    classDef host fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef docker fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef security fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef filesystem fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    
+    class HOST,USER,SCRIPTS,COMPOSE,ENV host
+    class DOCKER,BUILD,BUILDER,PROD,CONTAINER docker
+    class SECURITY,NONROOT,CAPS,READONLY,LIMITS security
+    class EXTERNAL,GEMINI,CODEX,GITHUB external
+    class FILESYSTEM,WEBSITE,WORKSHOPS filesystem
+```
+
+### Prerequisites
+
+1.  **Docker:** Install Docker Desktop (Windows, macOS) or Docker Engine (Linux). Visit [docker.com](https://www.docker.com/) for instructions.
+2.  **Git:** Required for cloning the project.
+3.  **API Keys:** You will still need:
+    *   Google Gemini Flash 2.5 API Key
+    *   OpenAI API Key (with Codex access)
+    *   GitHub Personal Access Token (PAT)
+
+### Setup Steps
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone <repository_url> # e.g., git clone https://github.com/your-org/website.git
+    cd website/workshop-builder
+    # Or cd website and then run scripts from workshop-builder
+    ```
+
+2.  **Configure Environment Variables:**
+    *   Navigate to the `workshop-builder` directory.
+    *   Copy the example environment file:
+        ```bash
+        cp .env.example .env
+        ```
+    *   Edit the `.env` file and fill in all your API keys and GitHub repository details:
+        ```env
+        GEMINI_API_KEY="your_gemini_api_key_here"
+        OPENAI_API_KEY="your_openai_api_key_here"
+        GITHUB_TOKEN="your_github_token_here"
+        GITHUB_REPO_OWNER="your_github_username_or_org" # e.g., the owner of the 'website' repo
+        GITHUB_REPO_NAME="your_repository_name"       # e.g., 'website'
+        # ... other settings can usually remain default
+        ```
+        **Important:** `WORKSHOPS_BASE_DIR` is typically `../public/data/workshops`. This path will be relative to the `workshop-builder` directory *inside* the container's `/app` mount.
+
+3.  **Build the Docker Image:**
+    From the `workshop-builder` directory, run the enhanced build script:
+    ```bash
+    ./build-docker.sh
+    ```
+    This enhanced script includes:
+    - Multi-stage Docker builds for optimized image size
+    - Security scanning with Trivy (if available)
+    - Comprehensive validation and error handling
+    - Build cache management and cleanup
+    - Professional logging with colored output
+
+4.  **Run Workshop Builder:**
+    
+    **Option A: Enhanced Run Script (Recommended)**
+    ```bash
+    ./run-docker.sh --topic "Your Desired Workshop Topic" --verbose
+    ```
+    
+    **Option B: Docker Compose (Development)**
+    ```bash
+    # For production use
+    docker-compose up workshop-builder
+    
+    # For development with debug features
+    docker-compose --profile dev up workshop-builder-dev
+    ```
+    
+    **Enhanced Features:**
+    - Security hardening with non-root user and capability restrictions
+    - Resource limits (2GB memory, 1 CPU by default)
+    - Comprehensive environment validation
+    - Professional error handling and logging
+    - Health checks and monitoring
+    - Secure temporary filesystem with tmpfs
+
+### Enhanced Docker Features
+
+The Workshop Builder Docker implementation includes enterprise-level security and operational features:
+
+#### Security Enhancements
+- **Non-root execution**: Container runs as `workshop-user` (UID 1000) for security
+- **Capability restrictions**: Minimal Linux capabilities with `--cap-drop=ALL`
+- **Read-only filesystem**: Root filesystem is read-only with secure tmpfs for temporary files
+- **Resource limits**: Memory (2GB) and CPU (1.0) limits prevent resource exhaustion
+- **Security scanning**: Trivy integration for vulnerability detection (if available)
+
+#### Operational Features
+- **Multi-stage builds**: Optimized image size with separate builder and production stages
+- **Health checks**: Container health monitoring with Python validation
+- **Comprehensive logging**: Colored output with detailed error reporting
+- **Environment validation**: Pre-flight checks for configuration and dependencies
+- **Build cache management**: Efficient Docker layer caching and cleanup
+
+#### Advanced Usage Options
+
+**Run Script Options:**
+```bash
+# Standard usage with resource limits
+./run-docker.sh --topic "Advanced Docker" --verbose
+
+# Disable resource limits for large workshops
+./run-docker.sh --no-limits --topic "Complex Topic"
+
+# Debug mode with verbose Docker output
+./run-docker.sh --debug --topic "Test Topic"
+
+# Custom resource limits
+./run-docker.sh --memory 4g --cpu 2.0 --topic "Resource Intensive Topic"
+```
+
+**Docker Compose Profiles:**
+```bash
+# Production deployment
+docker-compose up workshop-builder
+
+# Development with debugging tools
+docker-compose --profile dev up workshop-builder-dev
+
+# Background execution
+docker-compose up -d workshop-builder
+```
+
+### Verifying Installation
+
+After running a command like `./run-docker.sh --help`, you should see the CLI help output with enhanced features. A successful workshop generation run will output the PR URL.
+
+**Verification Commands:**
+```bash
+# Test basic functionality
+./run-docker.sh --help
+
+# Verify security features
+docker run --rm workshop-builder-app:latest whoami
+# Should output: workshop-user
+
+# Check resource limits
+docker stats workshop-builder-dev
+```
+
+The `codex` CLI and its dependencies (Node.js, Python) are managed within the Docker image. You do not need to install them directly on your host machine.
+
+## Alternative Setup (Manual / Virtual Environment)
+
+This section guides you through the steps required to install and configure the Workshop Builder CLI tool with **OpenAI Codex Framework** integration on your local machine manually. This is generally for development or debugging purposes outside of Docker.
+
+### Prerequisites (Manual Setup)
 
 Before you begin, ensure you have the following installed and configured:
 
@@ -15,20 +239,16 @@ Before you begin, ensure you have the following installed and configured:
     npm install -g @openai/codex-cli
     ```
     Or follow the latest installation instructions from OpenAI's documentation.
-
-### Advanced Requirements
-
-4.  **(Recommended) Docker:** For secure sandboxed execution of Codex CLI operations. Refer to [docker.com](https://www.docker.com/) for installation.
-5.  **Node.js:** Version 16+ required for OpenAI Codex CLI. Download from [nodejs.org](https://nodejs.org/).
+4.  **Node.js:** Version 16+ required for OpenAI Codex CLI. Download from [nodejs.org](https://nodejs.org/).
 
 ### API Access Requirements
 
-6.  **Required API Keys and Tokens:**
+5.  **Required API Keys and Tokens:**
     *   **Google Gemini Flash 2.5 API Key:** For advanced research capabilities. Obtain from [Google AI Studio](https://aistudio.google.com/) or Google Cloud Console.
     *   **OpenAI API Key:** **REQUIRED** for Codex CLI integration. Obtain from [OpenAI Platform](https://platform.openai.com/) with Codex access enabled.
     *   **GitHub Personal Access Token (PAT):** For professional GitHub workflow automation. Generate from GitHub Developer Settings with `repo`, `pull_request`, and `workflow` scopes.
 
-## Installation Steps
+## Installation Steps (Manual Setup)
 
 1.  **Clone the Repository:**
     Open your terminal and clone the repository containing the Workshop Builder project (assuming this project itself is hosted on GitHub).

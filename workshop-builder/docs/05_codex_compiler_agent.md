@@ -82,22 +82,97 @@ The `CompilerAgent` ([`agents/compiler_agent.py`](../agents/compiler_agent.py)) 
 ### Data Flow:
 
 ```mermaid
-graph TD
-    A[Orchestrator] -- Topic, ResearchDataPaths --> B(CompilerAgent);
-    B -- Reads --> C[workshop_compiler_agent_prompt.md];
-    B -- Prepares Input for AI --> D{Codex AI Model (CLI/API)};
-    C --> D;
-    E[Research Data Files] -.-> D;
-    D -- Generates --> F[Individual .md Content Files];
-    B -- Creates Module Directory --> G[workshop-XX-slug/];
-    F --> G;
-    B -- Reads Jinja2 Templates --> H[templates/];
-    B -- Uses Generated .md File List & Topic Info --> H;
-    H -- Renders --> I[manifest.json];
-    H -- Renders --> J[README.md];
-    I --> G;
-    J --> G;
-    B -- Returns Module Path --> A;
+graph TB
+    %% Input Phase
+    subgraph INPUT [📥 Input Phase]
+        direction TB
+        ORCH[🎭 Orchestrator]
+        TOPIC[🎯 Workshop Topic]
+        RESEARCH[📄 Research Data Paths]
+        
+        ORCH --> TOPIC
+        ORCH --> RESEARCH
+    end
+    
+    %% Compiler Agent Core
+    subgraph COMPILER [⚙️ CompilerAgent - Codex Framework]
+        direction TB
+        
+        %% Initialization
+        INIT[🚀 Initialize Agent<br/>Load Configuration]
+        
+        %% Prompt Loading
+        PROMPT_LOAD[📋 Load Master Prompt<br/>workshop_compiler_agent_prompt.md]
+        
+        %% AI Processing
+        AI_PREP[🔧 Prepare AI Input<br/>Context Injection]
+        CODEX_CLI[🤖 OpenAI Codex CLI<br/>Content Generation]
+        
+        %% Content Processing
+        VALIDATE[✅ Validate Content<br/>Quality Assurance]
+        TEMPLATE[📝 Template Rendering<br/>Jinja2 Processing]
+        
+        INIT --> PROMPT_LOAD
+        PROMPT_LOAD --> AI_PREP
+        AI_PREP --> CODEX_CLI
+        CODEX_CLI --> VALIDATE
+        VALIDATE --> TEMPLATE
+    end
+    
+    %% External Resources
+    subgraph RESOURCES [📚 External Resources]
+        direction TB
+        PROMPT_FILE[📄 workshop_compiler_agent_prompt.md<br/>Master Instructions]
+        RESEARCH_FILES[📊 Research Data Files<br/>Temporary Storage]
+        TEMPLATES[🎨 Jinja2 Templates<br/>manifest.json.j2<br/>README.md.j2]
+    end
+    
+    %% Output Phase
+    subgraph OUTPUT [📤 Output Phase]
+        direction TB
+        MODULE_DIR[📁 workshop-XX-slug/<br/>Module Directory]
+        
+        subgraph MODULE_CONTENTS [Module Contents]
+            direction LR
+            MD_FILES[📝 Content Files<br/>00_*.md, 01_*.md, ...]
+            MANIFEST[📋 manifest.json<br/>Metadata]
+            README[📖 README.md<br/>Documentation]
+        end
+        
+        MODULE_DIR --> MODULE_CONTENTS
+    end
+    
+    %% Data Flow Connections
+    INPUT --> COMPILER
+    COMPILER --> OUTPUT
+    
+    %% Resource Connections
+    PROMPT_FILE -.->|Load Instructions| PROMPT_LOAD
+    RESEARCH_FILES -.->|Research Context| AI_PREP
+    TEMPLATES -.->|Template Files| TEMPLATE
+    
+    %% Detailed Flow
+    TOPIC -->|Workshop Subject| AI_PREP
+    RESEARCH -->|Data Paths| AI_PREP
+    CODEX_CLI -->|Generated Content| MD_FILES
+    TEMPLATE -->|Rendered Files| MANIFEST
+    TEMPLATE -->|Rendered Files| README
+    
+    %% Return Path
+    MODULE_DIR -.->|Module Path| ORCH
+    
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef compiler fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef resource fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef output fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef ai fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    
+    class INPUT,ORCH,TOPIC,RESEARCH input
+    class COMPILER,INIT,PROMPT_LOAD,AI_PREP,VALIDATE,TEMPLATE compiler
+    class CODEX_CLI ai
+    class RESOURCES,PROMPT_FILE,RESEARCH_FILES,TEMPLATES resource
+    class OUTPUT,MODULE_DIR,MODULE_CONTENTS,MD_FILES,MANIFEST,README output
 ```
 
 1.  **Input to `CompilerAgent`:**

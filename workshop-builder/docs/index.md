@@ -26,4 +26,5 @@ This documentation will guide you through the project's advanced architecture, p
 6.  [API Reference (Python CLI)](./06_api_reference.md)
 7.  [Troubleshooting](./07_troubleshooting.md)
 8.  [Contribution Guidelines](./08_contribution_guidelines.md)
-9.  [Beamer Presentation Source](./beemer/README.md)
+9.  [Docker Enhancements & Security Features](./09_docker_enhancements.md)
+10. [Beamer Presentation Source](./beemer/README.md)

@@ -25,17 +25,43 @@ Understanding the core concepts and architecture of Workshop Builder is key to u
 The Workshop Builder follows a pipeline architecture where data flows sequentially through different agents.
 
 ```mermaid
-graph LR
-    A[User CLI Input: Topic] --> B(Orchestrator);
-    B -- Manages Workflow & Config --> C{ResearchAgent};
-    C -- Fetches Unstructured Data (Gemini) --> D[Raw Data Files];
-    B --> E{CompilerAgent};
-    D --> E;
-    E -- Uses Codex via Prompt --> F[Structured Workshop Module Files];
-    F -- Includes manifest.json & README.md (from Templates) --> F;
-    B --> G{GitAgent};
-    F --> G;
-    G -- Creates Branch, Commits, Pushes (GitHub API) --> H[Pull Request on GitHub];
+graph TB
+    %% User Input and Orchestration
+    A[🎯 User CLI Input<br/>Topic String] --> B{🎭 Orchestrator<br/>Codex Framework}
+    
+    %% Research Phase
+    B -->|Initialize Research| C[🔍 ResearchAgent<br/>Gemini Flash 2.5]
+    C -->|Deep Research Query| C1[🌐 Gemini API]
+    C1 -->|Research Data| C2[📄 Raw Data Files<br/>Temporary Storage]
+    
+    %% Compilation Phase
+    B -->|Initialize Compilation| D[⚙️ CompilerAgent<br/>OpenAI Codex CLI]
+    C2 -->|Research Input| D
+    D -->|Codex CLI Integration| D1[🤖 OpenAI Codex API]
+    D1 -->|Generated Content| D2[📚 Workshop Module<br/>Structured Files]
+    
+    %% Template Processing
+    D -->|Template Rendering| T[📋 Jinja2 Templates]
+    T -->|manifest.json & README.md| D2
+    
+    %% Git Workflow
+    B -->|Initialize Git Workflow| E[📦 GitAgent<br/>GitHub Integration]
+    D2 -->|Module Files| E
+    E -->|Branch & Commit| E1[🔗 GitHub API]
+    E1 -->|Professional PR| F[🎉 Pull Request<br/>Ready for Review]
+    
+    %% Styling
+    classDef userInput fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef orchestrator fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef agent fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef api fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef output fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class A userInput
+    class B orchestrator
+    class C,D,E agent
+    class C1,D1,E1 api
+    class C2,D2,T,F output
 ```
 
 **Components:**
@@ -82,76 +108,146 @@ graph LR
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant CLI
-    participant Orchestrator
-    participant ResearchAgent
-    participant CompilerAgent
-    participant GitAgent
-    participant GeminiAPI
-    participant CodexAPI
-    participant GitHubAPI
+    participant U as 👤 User
+    participant CLI as 💻 CLI Interface
+    participant O as 🎭 Orchestrator<br/>(Codex Framework)
+    participant RA as 🔍 ResearchAgent
+    participant CA as ⚙️ CompilerAgent
+    participant GA as 📦 GitAgent
+    participant G as 🌐 Gemini Flash 2.5
+    participant CX as 🤖 OpenAI Codex
+    participant GH as 🔗 GitHub API
 
-    User->>CLI: python cli.py --topic "My Topic"
-    CLI->>Orchestrator: initialize(codex_framework_config)
-    CLI->>Orchestrator: run_codex_workflow("My Topic")
+    %% User Initiation
+    U->>+CLI: python cli.py --topic "Advanced Docker"
+    CLI->>+O: initialize(codex_framework_config)
+    CLI->>O: run_codex_workflow("Advanced Docker")
     
-    Note over Orchestrator: Codex Framework Initialization
-    Orchestrator->>Orchestrator: Load AGENTS.MD guidance
-    Orchestrator->>Orchestrator: Initialize professional logging
+    %% Framework Initialization
+    rect rgb(240, 248, 255)
+        Note over O: 🚀 Codex Framework Initialization
+        O->>O: Load AGENTS.MD guidance
+        O->>O: Initialize professional logging
+        O->>O: Validate environment & configuration
+    end
     
-    Orchestrator->>ResearchAgent: initialize_with_codex_support(config)
-    Orchestrator->>ResearchAgent: conduct_deep_research("My Topic")
-    ResearchAgent->>GeminiFlash25API: Deep research query with advanced reasoning
-    GeminiFlash25API-->>ResearchAgent: Comprehensive research corpus
-    ResearchAgent->>ResearchAgent: Structure and validate research data
-    ResearchAgent-->>Orchestrator: Professional research package with metadata
+    %% Research Phase
+    rect rgb(240, 255, 240)
+        Note over O,G: 📚 Deep Research Phase
+        O->>+RA: initialize_with_codex_support(config)
+        O->>RA: conduct_deep_research("Advanced Docker")
+        RA->>+G: Advanced research query with context
+        G-->>-RA: Comprehensive research corpus
+        RA->>RA: Structure & validate research data
+        RA->>RA: Generate metadata & quality metrics
+        RA-->>-O: Professional research package
+    end
     
-    Note over Orchestrator: Codex CLI Integration Phase
-    Orchestrator->>CompilerAgent: initialize_with_codex_cli(config)
-    Orchestrator->>CompilerAgent: compile_professional_workshop(topic, research_data)
-    CompilerAgent->>CompilerAgent: Load AGENTS.MD guidance
-    CompilerAgent->>CodexCLI: Execute with comprehensive prompt and research data
-    CodexCLI-->>CompilerAgent: Professional workshop structure and content
-    CompilerAgent->>CompilerAgent: Validate and render professional templates
-    CompilerAgent->>CompilerAgent: Implement comprehensive error handling
-    CompilerAgent-->>Orchestrator: Complete workshop module with validation report
+    %% Compilation Phase
+    rect rgb(255, 248, 240)
+        Note over O,CX: ⚙️ Content Generation Phase
+        O->>+CA: initialize_with_codex_cli(config)
+        O->>CA: compile_professional_workshop(topic, research_data)
+        CA->>CA: Load AGENTS.MD guidance
+        CA->>CA: Prepare comprehensive prompt
+        CA->>+CX: Execute with research data & context
+        CX-->>-CA: Professional workshop structure
+        CA->>CA: Validate generated content
+        CA->>CA: Render Jinja2 templates
+        CA->>CA: Quality assurance checks
+        CA-->>-O: Complete workshop module
+    end
     
-    Note over Orchestrator: Professional Git Workflow
-    Orchestrator->>GitAgent: initialize_professional_workflow(config)
-    Orchestrator->>GitAgent: create_professional_pr(module_path, topic, metadata)
-    GitAgent->>GitAgent: Validate integration with existing workshops
-    GitAgent->>GitHubAPI: Create feature branch with proper naming
-    GitAgent->>GitHubAPI: Commit with comprehensive descriptions
-    GitAgent->>GitHubAPI: Push with proper tracking
-    GitAgent->>GitHubAPI: Create professional PR with labels and review guidance
-    GitHubAPI-->>GitAgent: Professional PR URL with metadata
-    GitAgent-->>Orchestrator: Complete workflow report
-    Orchestrator-->>CLI: Professional success report with PR details
-    CLI-->>User: Display comprehensive results and PR information
+    %% Git Workflow Phase
+    rect rgb(255, 240, 255)
+        Note over O,GH: 📦 Professional Git Workflow
+        O->>+GA: initialize_professional_workflow(config)
+        O->>GA: create_professional_pr(module_path, metadata)
+        GA->>GA: Validate workshop integration
+        GA->>+GH: Create feature branch
+        GA->>GH: Commit with detailed descriptions
+        GA->>GH: Push with proper tracking
+        GA->>GH: Create PR with labels & guidance
+        GH-->>-GA: Professional PR URL & metadata
+        GA-->>-O: Complete workflow report
+    end
+    
+    %% Success Response
+    O-->>-CLI: Professional success report
+    CLI-->>-U: 🎉 Workshop created successfully!<br/>PR: github.com/user/repo/pull/123
 ```
 
 ## Agent Interaction Model
 
 ```mermaid
-graph TD
-    subgraph Orchestrator
-        direction LR
-        RA[ResearchAgent]
-        CA[CompilerAgent]
-        GA[GitAgent]
+graph TB
+    %% Input/Output
+    INPUT[🎯 CLI Input<br/>Workshop Topic]
+    OUTPUT[🎉 CLI Output<br/>PR URL & Results]
+    
+    %% Orchestrator Container
+    subgraph ORCH [🎭 Orchestrator - Codex Framework]
+        direction TB
+        
+        %% Agent Coordination
+        COORD[🎛️ Agent Coordinator<br/>Workflow Management]
+        
+        %% Specialized Agents
+        subgraph AGENTS [Specialized AI Agents]
+            direction LR
+            RA[🔍 ResearchAgent<br/>Deep Research]
+            CA[⚙️ CompilerAgent<br/>Content Generation]
+            GA[📦 GitAgent<br/>Version Control]
+        end
+        
+        %% Internal Flow
+        COORD --> RA
+        RA --> CA
+        CA --> GA
+        GA --> COORD
     end
-
-    CLI_Input[CLI: Topic] --> Orchestrator
-    Orchestrator --> RA
-    RA -->|Unstructured Data Paths| CA
-    CA -->|Generated Module Path| GA
-    GA -->|PR URL| Orchestrator
-    Orchestrator --> CLI_Output[CLI: Result]
-
-    RA -.-> Gemini_Service[External: Gemini API]
-    CA -.-> Codex_Service[External: Codex API/CLI]
-    GA -.-> GitHub_Service[External: GitHub API]
+    
+    %% External Services
+    subgraph EXT [🌐 External Services]
+        direction TB
+        GEMINI[🧠 Gemini Flash 2.5<br/>Research API]
+        CODEX[🤖 OpenAI Codex<br/>Content Generation]
+        GITHUB[🔗 GitHub API<br/>Repository Management]
+    end
+    
+    %% Data Flow
+    INPUT --> ORCH
+    ORCH --> OUTPUT
+    
+    %% Agent-Service Connections
+    RA -.->|Research Queries| GEMINI
+    GEMINI -.->|Research Data| RA
+    
+    CA -.->|Generation Prompts| CODEX
+    CODEX -.->|Workshop Content| CA
+    
+    GA -.->|Git Operations| GITHUB
+    GITHUB -.->|PR Metadata| GA
+    
+    %% Data Annotations
+    RA -->|📄 Research Data<br/>Structured Files| CA
+    CA -->|📚 Workshop Module<br/>Complete Package| GA
+    GA -->|🔗 PR URL<br/>Success Report| COORD
+    
+    %% Styling
+    classDef input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef output fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef orchestrator fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef agent fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef service fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef coordinator fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    
+    class INPUT input
+    class OUTPUT output
+    class ORCH,AGENTS orchestrator
+    class RA,CA,GA agent
+    class GEMINI,CODEX,GITHUB service
+    class COORD coordinator
 ```
 
 This architecture is designed to be modular, allowing for future enhancements such as swapping AI models, adding new agents (e.g., a review agent), or supporting different output formats.
