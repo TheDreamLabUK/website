@@ -16,6 +16,10 @@ The AI tool you choose impacts your workflow. Roo Code (with your own API key) v
 
 Roo Code's **Ask, Code, and Architect modes** function as **permission presets with small, focused pre-prompts** (Insight 5). This is often preferable to tools with large system prompts, keeping you "closer to the metal" for more direct control.
 
+### Roo Code's Automatic Context Management
+
+Roo Code automatically compresses and manages the context window, striving to provide the most relevant information to the AI while optimizing token usage. While this automated approach generally works well and simplifies the user experience, it's important to note that it may not always be as fine-grained or precise as intelligent, manual prompt management by the user. For highly specific or complex scenarios, actively curating your context (as discussed in the "Strategic Prompting and Workflow Patterns" section) can yield more deterministic and accurate AI responses.
+
 ## Strategic Prompting and Workflow Patterns
 
 Effective AI interaction means providing the *right* information correctly. The **Tree-plus-Docs pattern** is key for code generation or file manipulation (Insight 4): provide a directory tree (`tree` command output) and relevant file snippets with each significant request. This narrow, deterministic approach minimises hallucinations and ensures the AI uses current information.
@@ -31,6 +35,24 @@ If the AI seems off track, use the **debug pattern**: "Tell me about this projec
 Remember, sending project context to an AI is sending data. Using **local MCP (Model Control Protocol) servers, or none if using a direct API key, is good security practice** (Insight 7). Be cautious about sending sensitive information to unknown third-party AI endpoints.
 
 By internalising these strategies, your AI assistant can become a true collaborator on complex creative and technical projects.
+
+## PromptCode: Bridging Codebase and AI
+
+When your trusty code agent stumbles, PromptCode steps in as the ultimate rescue tool. Its unique strength lies in bridging the gap between your codebase and AI models, offering a structured, intuitive way to:
+
+*   Select specific files as context for your prompts
+*   Add custom instructions or use prompt templates for clarity
+*   Work with any AI model, even those tricky non-API ones
+*   This is most powerfully used by copying and pasting the whole project into Gemini AI Studio's latest and most powerful model, with temperature turned down low and all of the safguards set to zero in the settings.Be mindful that AI Studio, though a very useful tool, is sure to use your code in the training of Google AI models.
+
+Tailor PromptCode to your needs with these options:
+
+*   **Ignore Patterns:** Define which files to skip when selecting context (e.g., `node_modules/` or `.git/`).
+*   **Prompt Folders:** Point to directories housing your custom prompt templates for quick access (e.g., `.cursorrule`, `ai-docs`).
+
+### Installation
+
+You can install this extension from the Visual Studio Code marketplace.
 
 ### Further Reading
 *   For model capabilities and costs, see the [Google Gemini Pricing Page](URL_PLACEHOLDER_GEMINI_PRICING).
