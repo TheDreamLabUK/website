@@ -223,7 +223,7 @@ graph TB
     RA -->|Research Queries| GEMINI
     GEMINI -->|Research Data| RA
     
-    CA -->|API Call (JSON)| OPENAI_API
+    CA -->|API Call JSON| OPENAI_API
     OPENAI_API -->|JSON Response| CA
     
     GA -->|Git Operations| GITHUB
