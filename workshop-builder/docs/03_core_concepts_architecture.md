@@ -219,15 +219,15 @@ graph TB
     INPUT --> ORCH
     ORCH --> OUTPUT
     
-    %% Agent‐Service Connections
-    RA -.->|Research Queries| GEMINI
-    GEMINI -.->|Research Data| RA
+    %% Agent-Service Connections (now all solid arrows)
+    RA -->|Research Queries| GEMINI
+    GEMINI -->|Research Data| RA
     
-    CA -.->|API Call (JSON)| OPENAI_API
-    OPENAI_API -.->|JSON Response| CA
+    CA -->|API Call (JSON)| OPENAI_API
+    OPENAI_API -->|JSON Response| CA
     
-    GA -.->|Git Operations| GITHUB
-    GITHUB -.->|PR Metadata| GA
+    GA -->|Git Operations| GITHUB
+    GITHUB -->|PR Metadata| GA
     
     %% Data Annotations
     RA -->|📄 Research Data<br>Structured Files| CA
