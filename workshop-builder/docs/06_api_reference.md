@@ -40,7 +40,7 @@ The following are the main Python classes and their key methods. This is not an 
     *   `workshops_base_dir: str` (Path to where workshop modules are stored/created)
     *   `github_repo_owner: str`
     *   `github_repo_name: str`
-    *   `compiler_agent_prompt_path: str` (Path to the master prompt for Codex)
+    *   `compiler_agent_prompt_path: str` (Path to the base prompt for the OpenAI API)
     *   `temp_data_dir: str` (Path for temporary research data)
 *   **Methods:**
     *   `__init__(self)`: Loads configuration from `.env`. Raises `ValueError` if required variables are missing.
@@ -74,14 +74,14 @@ The following are the main Python classes and their key methods. This is not an 
 ### 4. `agents.compiler_agent.CompilerAgent`
 
 *   **File:** [`workshop-builder/agents/compiler_agent.py`](../agents/compiler_agent.py)
-*   **Description:** Transforms unstructured data into a structured workshop module using an AI model (e.g., Codex) and Jinja2 templates.
+*   **Description:** Transforms unstructured data into a structured workshop module using the OpenAI Chat Completions API and Jinja2 templates where applicable.
 *   **Methods:**
     *   `__init__(self, config: AppConfig)`: Initializes with application configuration.
     *   `compile_workshop(self, topic: str, unstructured_data_paths: list[str]) -> str`:
         1.  Determines the next workshop number (e.g., `05`).
         2.  Creates the main workshop module directory (e.g., `public/data/workshops/workshop-05-topic-slug/`).
-        3.  Invokes an AI model (e.g., Codex via CLI or API) using the master prompt ([`workshop_compiler_agent_prompt.md`](../workshop_compiler_agent_prompt.md)) and the `unstructured_data_paths`. The AI generates individual markdown content files (`00_*.md`, `01_*.md`, etc.) within the new module directory.
-        4.  Uses Jinja2 templates ([`templates/`](../templates/)) to render `manifest.json` and `README.md` for the module, using information like the workshop number, topic, and list of generated markdown files.
+        3.  Invokes the OpenAI Chat Completions API using structured messages (based on the master prompt [`workshop_compiler_agent_prompt.md`](../workshop_compiler_agent_prompt.md)) and the `unstructured_data_paths`. The API returns a JSON object containing the content for all workshop files.
+        4.  Parses the JSON response and writes the individual files (`00_*.md`, `01_*.md`, `manifest.json`, `README.md`, etc.) into the new module directory. Jinja2 templates may still be used for structuring parts of these files if needed.
         5.  Returns the absolute path to the created workshop module directory.
         6.  Raises `CompilerAgentError` on failure.
 

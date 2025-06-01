@@ -1,36 +1,31 @@
 # Multi-Stage Dockerfile for Workshop Builder with Enhanced Security
-# Built on OpenAI Codex Framework with professional Docker practices
+# Built with OpenAI API integration and professional Docker practices
 
 # =============================================================================
 # BUILD STAGE - Dependencies and Build Artifacts
 # =============================================================================
-FROM ghcr.io/openai/codex-universal:latest AS builder
-
-# Set up language versions required by the project and codex-cli
-ENV CODEX_ENV_PYTHON_VERSION=3.12
-ENV CODEX_ENV_NODE_VERSION=20
+FROM python:3.12-slim AS builder
 
 # Set working directory for build stage
 WORKDIR /build
+
+# Install system dependencies for building Python packages
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy and install Python dependencies first (better layer caching)
 COPY ./requirements.txt /build/requirements.txt
 RUN pip install --no-cache-dir --user -r requirements.txt
 
-# Install OpenAI Codex CLI globally
-RUN npm install -g @openai/codex-cli
-
 # Verify installations
-RUN python --version && node --version && codex --version || echo "Codex CLI verification skipped"
+RUN python --version && pip list | grep openai
 
 # =============================================================================
 # PRODUCTION STAGE - Optimized Runtime Image
 # =============================================================================
-FROM ghcr.io/openai/codex-universal:latest AS production
-
-# Set up language versions (must match builder stage)
-ENV CODEX_ENV_PYTHON_VERSION=3.12
-ENV CODEX_ENV_NODE_VERSION=20
+FROM python:3.12-slim AS production
 
 # Create non-root user for enhanced security
 RUN adduser --disabled-password --gecos '' --uid 1000 workshop-user && \
@@ -42,10 +37,6 @@ WORKDIR /app/workshop-builder
 
 # Copy Python packages from builder stage
 COPY --from=builder /root/.local /home/workshop-user/.local
-
-# Copy Node.js global packages from builder stage
-COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
-COPY --from=builder /usr/local/bin/codex /usr/local/bin/codex
 
 # Update PATH for user-installed packages
 ENV PATH="/home/workshop-user/.local/bin:$PATH"
@@ -74,7 +65,7 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Define labels for better image management
 LABEL maintainer="Workshop Builder Team"
-LABEL description="OpenAI Codex Framework-powered workshop generation system"
+LABEL description="OpenAI API-powered workshop generation system"
 LABEL version="2.0.0"
 LABEL security.scan="enabled"
 

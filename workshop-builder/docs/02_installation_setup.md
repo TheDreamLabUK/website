@@ -4,7 +4,7 @@ This document outlines how to set up the Workshop Builder. The recommended metho
 
 ## Installation and Setup (Docker - Recommended)
 
-Running Workshop Builder inside a Docker container is the recommended method for security, consistency, and ease of setup. This leverages the `ghcr.io/openai/codex-universal` base image with enterprise-level security enhancements.
+Running Workshop Builder inside a Docker container is the recommended method for security, consistency, and ease of setup. This leverages a standard Python base image with enterprise-level security enhancements.
 
 ```mermaid
 graph TB
@@ -46,7 +46,7 @@ graph TB
     subgraph EXTERNAL [🌐 External Services]
         direction TB
         GEMINI[🧠 Gemini Flash 2.5]
-        CODEX[🤖 OpenAI Codex]
+        OPENAI[🤖 OpenAI API]
         GITHUB[🔗 GitHub API]
     end
     
@@ -81,7 +81,7 @@ graph TB
     class HOST,USER,SCRIPTS,COMPOSE,ENV host
     class DOCKER,BUILD,BUILDER,PROD,CONTAINER docker
     class SECURITY,NONROOT,CAPS,READONLY,LIMITS security
-    class EXTERNAL,GEMINI,CODEX,GITHUB external
+    class EXTERNAL,GEMINI,OPENAI,GITHUB external
     class FILESYSTEM,WEBSITE,WORKSHOPS filesystem
 ```
 
@@ -91,7 +91,7 @@ graph TB
 2.  **Git:** Required for cloning the project.
 3.  **API Keys:** You will still need:
     *   Google Gemini Flash 2.5 API Key
-    *   OpenAI API Key (with Codex access)
+    *   OpenAI API Key
     *   GitHub Personal Access Token (PAT)
 
 ### Setup Steps
@@ -220,11 +220,11 @@ docker run --rm workshop-builder-app:latest whoami
 docker stats workshop-builder-dev
 ```
 
-The `codex` CLI and its dependencies (Node.js, Python) are managed within the Docker image. You do not need to install them directly on your host machine.
+The `codex` CLI and its dependencies (Node.js, Python) are no longer required for the core AI functionality, as the system now uses direct OpenAI API calls.
 
 ## Alternative Setup (Manual / Virtual Environment)
 
-This section guides you through the steps required to install and configure the Workshop Builder CLI tool with **OpenAI Codex Framework** integration on your local machine manually. This is generally for development or debugging purposes outside of Docker.
+This section guides you through the steps required to install and configure the Workshop Builder CLI tool with **OpenAI API integration** on your local machine manually. This is generally for development or debugging purposes outside of Docker.
 
 ### Prerequisites (Manual Setup)
 
@@ -232,20 +232,14 @@ Before you begin, ensure you have the following installed and configured:
 
 ### Core Requirements
 
-1.  **Python:** Version 3.10 or higher is required for OpenAI Codex Framework compatibility. Download from [python.org](https://www.python.org/).
+1.  **Python:** Version 3.10 or higher is required for OpenAI API compatibility. Download from [python.org](https://www.python.org/).
 2.  **Git:** Required for professional version control operations and GitHub integration. Download from [git-scm.com](https://git-scm.com/).
-3.  **OpenAI Codex CLI:** **REQUIRED** for actual Codex integration. Install via:
-    ```bash
-    npm install -g @openai/codex-cli
-    ```
-    Or follow the latest installation instructions from OpenAI's documentation.
-4.  **Node.js:** Version 16+ required for OpenAI Codex CLI. Download from [nodejs.org](https://nodejs.org/).
 
 ### API Access Requirements
 
-5.  **Required API Keys and Tokens:**
+3.  **Required API Keys and Tokens:**
     *   **Google Gemini Flash 2.5 API Key:** For advanced research capabilities. Obtain from [Google AI Studio](https://aistudio.google.com/) or Google Cloud Console.
-    *   **OpenAI API Key:** **REQUIRED** for Codex CLI integration. Obtain from [OpenAI Platform](https://platform.openai.com/) with Codex access enabled.
+    *   **OpenAI API Key:** **REQUIRED** for direct OpenAI API integration. Obtain from [OpenAI Platform](https://platform.openai.com/).
     *   **GitHub Personal Access Token (PAT):** For professional GitHub workflow automation. Generate from GitHub Developer Settings with `repo`, `pull_request`, and `workflow` scopes.
 
 ## Installation Steps (Manual Setup)
@@ -273,7 +267,7 @@ Before you begin, ensure you have the following installed and configured:
         ```
 
 3.  **Install Python Dependencies:**
-    Install the required Python packages for OpenAI Codex Framework integration:
+    Install the required Python packages for OpenAI API integration:
     ```bash
     pip install -r requirements.txt
     ```
@@ -281,26 +275,13 @@ Before you begin, ensure you have the following installed and configured:
     -   `python-dotenv`: Environment variable management
     -   `PyGithub`: Professional GitHub API integration
     -   `google-generativeai`: Gemini Flash 2.5 API client
+    -   `openai`: Official OpenAI Python client for direct API calls
     -   `requests`: HTTP client for API communications
     -   `Jinja2`: Professional template rendering
     -   `click`: Advanced CLI interface framework
-    -   `subprocess`: For Codex CLI integration (built-in)
 
-4.  **OpenAI Codex CLI Setup:**
-    **CRITICAL:** Install and configure the OpenAI Codex CLI for actual framework integration:
-    ```bash
-    # Install Codex CLI
-    npm install -g @openai/codex-cli
-    
-    # Verify installation
-    codex --version
-    
-    # Test authentication (will use OPENAI_API_KEY from environment)
-    codex auth test
-    ```
-
-5.  **Configure OpenAI Codex Framework Environment:**
-    The Workshop Builder requires comprehensive environment configuration for Codex Framework integration.
+4.  **Configure OpenAI API Environment:**
+    The Workshop Builder requires comprehensive environment configuration for OpenAI API integration.
     -   Locate the example environment file: [`workshop-builder/.env.example`](../.env.example).
     -   Create your configuration file:
         ```bash
@@ -310,19 +291,17 @@ Before you begin, ensure you have the following installed and configured:
         ```env
         # CORE API KEYS (REQUIRED)
         GEMINI_API_KEY="your_gemini_flash_25_api_key"
-        OPENAI_API_KEY="your_openai_api_key_with_codex_access"
+        OPENAI_API_KEY="your_openai_api_key"
         GITHUB_TOKEN="your_github_pat_with_repo_scope"
         
         # GITHUB REPOSITORY (REQUIRED)
         GITHUB_REPO_OWNER="your_github_username"
         GITHUB_REPO_NAME="your_workshop_repository"
         
-        # CODEX FRAMEWORK CONFIGURATION
-        CODEX_CLI_ENABLED=true
-        CODEX_CLI_PATH=codex
-        CODEX_MODEL=code-davinci-002
-        CODEX_MAX_TOKENS=4000
-        CODEX_TEMPERATURE=0.1
+        # OPENAI API CONFIGURATION
+        OPENAI_MODEL=gpt-4o
+        OPENAI_MAX_TOKENS=4000
+        OPENAI_TEMPERATURE=0.1
         
         # AGENTS.MD SUPPORT
         AGENTS_MD_ENABLED=true
@@ -339,59 +318,32 @@ Before you begin, ensure you have the following installed and configured:
         METADATA_TRACKING=true
         ```
 
-6.  **Validate OpenAI Codex Framework Configuration:**
-    Test your configuration to ensure proper Codex Framework integration:
+5.  **Validate OpenAI API Configuration:**
+    Test your configuration to ensure proper OpenAI API integration:
     ```bash
     # Test configuration loading
     python orchestrator/config.py
     
-    # Verify Codex CLI integration
+    # Verify OpenAI API integration
     python -c "
     from orchestrator.config import AppConfig
     config = AppConfig()
-    print('Codex CLI Enabled:', config.codex_cli_enabled)
-    print('Configuration Valid:', 'SUCCESS' if config.openai_api_key else 'FAILED')
+    print('OpenAI API Key Set:', 'SUCCESS' if config.openai_api_key else 'FAILED')
+    print('OpenAI Model:', config.openai_model)
     "
     ```
 
-## Verifying OpenAI Codex Framework Installation
+## Verifying OpenAI API Integration
 
-Once the setup is complete, perform comprehensive verification of the Codex Framework integration:
+Once the setup is complete, perform comprehensive verification of the OpenAI API integration:
 
 ### 1. Basic CLI Verification
 ```bash
 python cli.py --help
 ```
-This should display the command-line options with Codex Framework support.
+This should display the command-line options.
 
-### 2. Codex CLI Integration Test
-```bash
-# Test Codex CLI accessibility
-codex --version
-
-# Test API authentication
-codex auth test
-```
-
-### 3. Comprehensive System Validation
-```bash
-# Run comprehensive configuration validation
-python orchestrator/config.py
-
-# Test all agent initialization
-python -c "
-from orchestrator.orchestrator import Orchestrator
-from orchestrator.config import AppConfig
-config = AppConfig()
-orchestrator = Orchestrator(config)
-print('✓ OpenAI Codex Framework integration validated')
-print('✓ All agents initialized successfully')
-print('✓ Professional error handling enabled')
-print('✓ AGENTS.MD support configured')
-"
-```
-
-### 4. API Connectivity Test
+### 2. API Connectivity Test
 ```bash
 # Test Gemini Flash 2.5 API connectivity
 python -c "
@@ -406,11 +358,31 @@ python -c "
 import openai
 import os
 openai.api_key = os.getenv('OPENAI_API_KEY')
+client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+client.models.list() # A simple call to verify connectivity
 print('✓ OpenAI API connection verified')
 "
 ```
 
-### 5. GitHub Integration Test
+### 3. Comprehensive System Validation
+```bash
+# Run comprehensive configuration validation
+python orchestrator/config.py
+
+# Test all agent initialization
+python -c "
+from orchestrator.orchestrator import Orchestrator
+from orchestrator.config import AppConfig
+config = AppConfig()
+orchestrator = Orchestrator(config)
+print('✓ OpenAI API integration validated')
+print('✓ All agents initialized successfully')
+print('✓ Professional error handling enabled')
+print('✓ AGENTS.MD support configured')
+"
+```
+
+### 4. GitHub Integration Test
 ```bash
 # Test GitHub API connectivity
 python -c "
@@ -426,19 +398,9 @@ print(f'✓ GitHub API connection verified for user: {user.login}')
 
 ### Common Issues and Solutions
 
-**Codex CLI Not Found:**
-```bash
-# Ensure Node.js is installed
-node --version
-
-# Reinstall Codex CLI
-npm uninstall -g @openai/codex-cli
-npm install -g @openai/codex-cli
-```
-
 **API Authentication Failures:**
 - Verify API keys are correctly set in `.env`
-- Ensure OpenAI API key has Codex access enabled
+- Ensure OpenAI API key has appropriate permissions
 - Check GitHub token has required scopes (`repo`, `pull_request`, `workflow`)
 
 **Configuration Validation Errors:**
@@ -457,12 +419,11 @@ print('GITHUB_TOKEN:', 'SET' if os.getenv('GITHUB_TOKEN') else 'MISSING')
 ## Success Confirmation
 
 When all verification steps pass, you should see:
-- ✓ OpenAI Codex CLI accessible and authenticated
 - ✓ All API connections verified
 - ✓ Configuration validation successful
 - ✓ Agent initialization complete
 - ✓ Professional error handling enabled
 
-**You are now ready to use the Workshop Builder with full OpenAI Codex Framework integration!**
+**You are now ready to use the Workshop Builder with full OpenAI API integration!**
 
 Next: [Core Concepts & System Architecture](./03_core_concepts_architecture.md)

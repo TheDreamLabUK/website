@@ -1,13 +1,21 @@
 import logging
 import os
-import subprocess
 import json
 import shutil
 import tempfile
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Any
 
-from ..orchestrator.config import AppConfig
+import openai
+
+# Handle both relative and absolute imports for flexibility
+try:
+    from ..orchestrator.config import AppConfig
+except ImportError:
+    import sys
+    import os
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+    from orchestrator.config import AppConfig
 
 class CompilerAgentError(Exception):
     """Custom exception for CompilerAgent errors."""
@@ -20,8 +28,11 @@ class CompilerAgent:
         self.logger.info("CompilerAgent initialized.")
 
         if not self.config.openai_api_key:
-            self.logger.error("OpenAI API key (for Codex CLI) is not configured.")
+            self.logger.error("OpenAI API key is not configured.")
             raise CompilerAgentError("OpenAI API key missing.")
+        
+        # Initialize OpenAI client
+        self.openai_client = openai.OpenAI(api_key=self.config.openai_api_key)
         
         # Resolve compiler_agent_prompt_path to be absolute
         if not os.path.isabs(self.config.compiler_agent_prompt_path):
@@ -35,23 +46,18 @@ class CompilerAgent:
         
         self.logger.debug(f"Compiler agent prompt path: {self.config.compiler_agent_prompt_path}")
         
-        # Check if Codex CLI is available
-        self._verify_codex_cli()
+        # Verify OpenAI API connectivity
+        self._verify_openai_api()
 
-    def _verify_codex_cli(self):
-        """Verify that the OpenAI Codex CLI is installed and accessible."""
+    def _verify_openai_api(self):
+        """Verify that the OpenAI API is accessible."""
         try:
-            result = subprocess.run(['codex', '--version'],
-                                  capture_output=True, text=True, timeout=10)
-            if result.returncode == 0:
-                self.logger.info(f"Codex CLI verified: {result.stdout.strip()}")
-            else:
-                self.logger.warning("Codex CLI found but version check failed")
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            self.logger.warning("Codex CLI not found. Install with: npm install -g @openai/codex")
-            # Don't raise error here - we'll handle this gracefully in compile_workshop
+            # Test API connectivity with a simple models list call
+            models = self.openai_client.models.list()
+            self.logger.info("OpenAI API connectivity verified successfully")
         except Exception as e:
-            self.logger.warning(f"Error checking Codex CLI: {e}")
+            self.logger.warning(f"OpenAI API verification failed: {e}")
+            # Don't raise error here - we'll handle this gracefully in compile_workshop
 
     def _create_agents_md(self, module_path: str, topic: str) -> str:
         """Create an AGENTS.MD file for the workshop module following Codex best practices."""
@@ -99,8 +105,8 @@ This is a workshop module for: **{topic}**
         self.logger.info(f"Created AGENTS.MD file: {agents_md_path}")
         return agents_md_path
 
-    def _prepare_codex_prompt(self, topic: str, research_data_paths: List[str], module_path: str) -> str:
-        """Prepare the comprehensive prompt for Codex CLI following best practices."""
+    def _prepare_workshop_messages(self, topic: str, research_data_paths: List[str], module_path: str) -> List[Dict[str, str]]:
+        """Prepare messages for OpenAI Chat Completions API."""
         
         # Read the base prompt template
         with open(self.config.compiler_agent_prompt_path, 'r', encoding='utf-8') as f:
@@ -117,84 +123,91 @@ This is a workshop module for: **{topic}**
             except Exception as e:
                 self.logger.warning(f"Could not read research file {data_path}: {e}")
         
-        # Create the comprehensive prompt following Codex best practices
-        codex_prompt = f"""I'm working in the workshop module directory: {module_path}
+        # Create structured messages for chat completions
+        system_message = f"""You are an expert educational content creator specializing in technical workshops. Your task is to create comprehensive, well-structured workshop modules based on research data.
 
 {base_prompt}
 
-SUBJECT: {topic}
+You must respond with a JSON object containing the workshop files. The JSON structure should be:
+{{
+    "files": {{
+        "manifest.json": "content of manifest.json",
+        "README.md": "content of README.md",
+        "00_introduction.md": "content of introduction",
+        "01_core_concepts.md": "content of core concepts",
+        "02_practical_examples.md": "content of practical examples",
+        "03_advanced_topics.md": "content of advanced topics (if applicable)",
+        "04_conclusion.md": "content of conclusion"
+    }}
+}}
+
+Ensure all content is educational, accurate, and follows markdown best practices."""
+
+        user_message = f"""Create a comprehensive workshop module for: "{topic}"
 
 RESEARCH DATA:
 {research_content}
 
-TASK: Create a comprehensive workshop module for "{topic}" in the current directory.
-
-Please:
+Requirements:
 1. Analyze the research data thoroughly
 2. Create a logical sequence of markdown files (00_introduction.md, 01_core_concepts.md, etc.)
-3. Generate manifest.json with the correct file listing
-4. Create a comprehensive README.md
+3. Generate manifest.json with the correct file listing and metadata
+4. Create a comprehensive README.md with navigation
 5. Ensure all content is educational, accurate, and well-structured
+6. Include practical examples and exercises where applicable
+7. Use proper markdown formatting throughout
 
-The workshop should follow the established patterns and be suitable for learners wanting to understand {topic}.
+The workshop should be suitable for learners wanting to understand {topic} and follow established educational patterns."""
 
-Please create all files directly in the current working directory: {module_path}
-"""
-        
-        return codex_prompt
+        return [
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": user_message}
+        ]
 
-    def _execute_codex_cli(self, prompt: str, module_path: str) -> bool:
-        """Execute the Codex CLI with the prepared prompt."""
+    def _execute_openai_api(self, messages: List[Dict[str, str]], module_path: str) -> bool:
+        """Execute OpenAI API call to generate workshop content."""
         try:
-            # Create a temporary file for the prompt
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as prompt_file:
-                prompt_file.write(prompt)
-                prompt_file_path = prompt_file.name
+            self.logger.info("Calling OpenAI API for workshop compilation...")
             
-            # Set up environment with API key
-            env = os.environ.copy()
-            env['OPENAI_API_KEY'] = self.config.openai_api_key
-            
-            # Execute Codex CLI
-            self.logger.info("Executing Codex CLI for workshop compilation...")
-            
-            # Use codex CLI with the prompt file and working directory
-            cmd = [
-                'codex',
-                '--model', 'codex-1',  # Use the specialized coding model
-                '--approval-mode', 'auto-edit',  # Allow file creation
-                f'--prompt-file', prompt_file_path
-            ]
-            
-            result = subprocess.run(
-                cmd,
-                cwd=module_path,
-                env=env,
-                capture_output=True,
-                text=True,
-                timeout=300  # 5 minute timeout
+            # Make API call using chat completions
+            response = self.openai_client.chat.completions.create(
+                model=self.config.openai_model,
+                messages=messages,
+                max_tokens=self.config.openai_max_tokens,
+                temperature=self.config.openai_temperature,
+                response_format={"type": "json_object"}  # Ensure JSON response
             )
             
-            # Clean up prompt file
-            os.unlink(prompt_file_path)
+            # Extract the generated content
+            content = response.choices[0].message.content
+            self.logger.debug(f"OpenAI API response received: {len(content)} characters")
             
-            if result.returncode == 0:
-                self.logger.info("Codex CLI execution completed successfully")
-                self.logger.debug(f"Codex output: {result.stdout}")
+            # Parse the JSON response
+            try:
+                workshop_data = json.loads(content)
+                files_data = workshop_data.get("files", {})
+                
+                if not files_data:
+                    self.logger.error("No files data found in OpenAI response")
+                    return False
+                
+                # Write all files to the module directory
+                for filename, file_content in files_data.items():
+                    file_path = os.path.join(module_path, filename)
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(file_content)
+                    self.logger.info(f"Created file: {filename}")
+                
+                self.logger.info(f"OpenAI API execution completed successfully. Created {len(files_data)} files.")
                 return True
-            else:
-                self.logger.error(f"Codex CLI failed with return code {result.returncode}")
-                self.logger.error(f"Error output: {result.stderr}")
+                
+            except json.JSONDecodeError as e:
+                self.logger.error(f"Failed to parse JSON response from OpenAI: {e}")
+                self.logger.debug(f"Raw response content: {content}")
                 return False
                 
-        except subprocess.TimeoutExpired:
-            self.logger.error("Codex CLI execution timed out")
-            return False
-        except FileNotFoundError:
-            self.logger.error("Codex CLI not found. Please install with: npm install -g @openai/codex")
-            return False
         except Exception as e:
-            self.logger.error(f"Error executing Codex CLI: {e}", exc_info=True)
+            self.logger.error(f"Error executing OpenAI API call: {e}", exc_info=True)
             return False
 
     def _fallback_generation(self, topic: str, research_data_paths: List[str], module_path: str):
@@ -340,11 +353,11 @@ For optimal results, ensure the OpenAI Codex CLI is properly installed and confi
         # Create AGENTS.MD file for proper Codex guidance
         self._create_agents_md(module_path, topic)
         
-        # Prepare comprehensive prompt for Codex
-        codex_prompt = self._prepare_codex_prompt(topic, research_data_paths, module_path)
+        # Prepare messages for OpenAI API
+        messages = self._prepare_workshop_messages(topic, research_data_paths, module_path)
         
-        # Try to execute Codex CLI
-        success = self._execute_codex_cli(codex_prompt, module_path)
+        # Try to execute OpenAI API call
+        success = self._execute_openai_api(messages, module_path)
         
         if not success:
             self.logger.warning("Codex CLI execution failed, using fallback generation")

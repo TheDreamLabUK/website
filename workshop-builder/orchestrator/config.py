@@ -28,12 +28,10 @@ class AppConfig:
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
         self.github_token = os.getenv("GITHUB_TOKEN")
         
-        # OpenAI Codex Framework Configuration
-        self.codex_cli_enabled = os.getenv("CODEX_CLI_ENABLED", "true").lower() == "true"
-        self.codex_cli_path = os.getenv("CODEX_CLI_PATH", "codex")  # Default to 'codex' in PATH
-        self.codex_model = os.getenv("CODEX_MODEL", "code-davinci-002")
-        self.codex_max_tokens = int(os.getenv("CODEX_MAX_TOKENS", "4000"))
-        self.codex_temperature = float(os.getenv("CODEX_TEMPERATURE", "0.1"))
+        # OpenAI API Configuration
+        self.openai_model = os.getenv("OPENAI_MODEL", "gpt-4o")
+        self.openai_max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", "4000"))
+        self.openai_temperature = float(os.getenv("OPENAI_TEMPERATURE", "0.1"))
         
         # AGENTS.MD Support Configuration
         self.agents_md_enabled = os.getenv("AGENTS_MD_ENABLED", "true").lower() == "true"
@@ -79,26 +77,24 @@ class AppConfig:
             missing_vars.append("GITHUB_REPO_NAME")
 
         if missing_vars:
-            error_message = "Error: Missing required environment variables for OpenAI Codex Framework:\n"
+            error_message = "Error: Missing required environment variables for Workshop Builder:\n"
             for var in missing_vars:
                 error_message += f"- {var}\n"
             error_message += "\nPlease create or update the .env file in the 'workshop-builder' directory."
-            error_message += "\nRequired for OpenAI Codex CLI integration and professional agent orchestration."
+            error_message += "\nRequired for OpenAI API integration and professional agent orchestration."
             logging.critical(error_message)
             raise ValueError(error_message)
 
-        # Validate Codex CLI Configuration
-        if self.codex_cli_enabled:
+        # Validate OpenAI API Configuration
+        if self.openai_api_key:
             try:
-                import subprocess
-                result = subprocess.run([self.codex_cli_path, "--version"],
-                                      capture_output=True, text=True, timeout=10)
-                if result.returncode != 0:
-                    logging.warning(f"Codex CLI not found at '{self.codex_cli_path}'. Fallback generation will be used.")
-                    self.codex_cli_enabled = False
-            except (subprocess.TimeoutExpired, FileNotFoundError, subprocess.SubprocessError):
-                logging.warning(f"Codex CLI validation failed. Fallback generation will be used.")
-                self.codex_cli_enabled = False
+                import openai
+                client = openai.OpenAI(api_key=self.openai_api_key)
+                # Test API connectivity with a simple models list call
+                models = client.models.list()
+                logging.info("OpenAI API connectivity validated successfully")
+            except Exception as e:
+                logging.warning(f"OpenAI API validation failed: {e}")
 
     def get_logger(self, name: str) -> logging.Logger:
         """Get a configured logger for the specified component."""
@@ -114,14 +110,12 @@ class AppConfig:
             logger.setLevel(getattr(logging, self.log_level))
         return logger
 
-    def get_codex_config(self) -> dict:
-        """Get OpenAI Codex CLI configuration parameters."""
+    def get_openai_config(self) -> dict:
+        """Get OpenAI API configuration parameters."""
         return {
-            "enabled": self.codex_cli_enabled,
-            "cli_path": self.codex_cli_path,
-            "model": self.codex_model,
-            "max_tokens": self.codex_max_tokens,
-            "temperature": self.codex_temperature,
+            "model": self.openai_model,
+            "max_tokens": self.openai_max_tokens,
+            "temperature": self.openai_temperature,
             "api_key": self.openai_api_key
         }
 

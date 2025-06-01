@@ -46,14 +46,14 @@ This section provides guidance on common issues you might encounter while using 
     *   **Cause:**
         *   Poor quality or insufficient `ResearchAgent` output (unstructured_data_paths).
         *   Issues with the [`workshop_compiler_agent_prompt.md`](../workshop_compiler_agent_prompt.md) – it might be unclear, too complex, or have conflicting instructions.
-        *   The "Codex" AI model (OpenAI API or CLI) is unavailable or returning errors.
+        *   The OpenAI API is unavailable or returning errors.
         *   Context window limitations of the AI model if research data is excessively large.
         *   Incorrect path to `workshop_compiler_agent_prompt.md` in `.env` or `AppConfig`.
     *   **Solution:**
         1.  **Inspect Research Data:** Check the files in `workshop-builder/temp_research_data/` (after a run, before cleanup, or by temporarily disabling cleanup in `Orchestrator`) to ensure `ResearchAgent` produced meaningful content.
         2.  **Review and Refine Prompt:** The `workshop_compiler_agent_prompt.md` is key. Simplify, clarify, or add more specific examples/constraints to it.
-        3.  **Test Codex Independently:** If using Codex CLI, try running it manually with a simplified version of the prompt and a small piece of research data to isolate issues.
-        4.  **Check AI Model Status:** Ensure the OpenAI API (or other model provider) is operational.
+        3.  **Test OpenAI API Independently:** Use the `openai` Python library to make a basic Chat Completions API call with a simple prompt to isolate API connectivity or authentication issues.
+        4.  **Check AI Model Status:** Ensure the OpenAI API is operational by checking the OpenAI status page.
         5.  Verify the `COMPILER_AGENT_PROMPT_PATH` in your configuration.
 
 5.  **`ModuleNotFoundError` or `ImportError`**
@@ -98,7 +98,7 @@ This section provides guidance on common issues you might encounter while using 
 
 6.  **Validate AI Model Access:**
     *   For Gemini: Use a simple Python script with the `google-generativeai` library to make a basic API call with your `GEMINI_API_KEY`.
-    *   For OpenAI/Codex: If using the API, use the `openai` Python library for a basic test. If using the Codex CLI, run `codex "hello"` in your terminal.
+    *   For OpenAI: Use the `openai` Python library for a basic Chat Completions API call.
 
 If you encounter an issue not listed here, the verbose logs are the best starting point for diagnosis.
 

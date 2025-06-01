@@ -78,9 +78,10 @@ Class: `CompilerAgent`
 - Method: `compile_workshop(topic: str, unstructured_data_paths: List[str]) -> str`
 - Determines the next workshop number (e.g., by scanning `public/data/workshops/`).
 - Creates the workshop module directory (e.g., `public/data/workshops/workshop-XX-{slug}/`).
-- **Core Task**: Invokes a Codex agent (CLI or API) using the prompt defined in `workshop-builder/workshop_compiler_agent_prompt.md`.
-    - This Codex agent is responsible for analyzing the `unstructured_data_paths` and generating the content for individual markdown files (`00_introduction.md`, `01_core_concepts.md`, etc.) directly into the new module directory.
-- **Templating**: After Codex generates the content files, the `CompilerAgent` uses Jinja2 templates:
+- **Core Task**: Invokes the OpenAI Chat Completions API using structured messages and the prompt defined in `workshop-builder/workshop_compiler_agent_prompt.md`.
+    - The OpenAI API is responsible for analyzing the `unstructured_data_paths` and generating a JSON object containing the content for all workshop files (`manifest.json`, `README.md`, `00_introduction.md`, etc.).
+- **File Creation**: After the OpenAI API generates the JSON content, the `CompilerAgent` parses this JSON and writes the individual files directly into the new module directory.
+- **Templating**: The `CompilerAgent` can still use Jinja2 templates for certain files if needed, but the primary content generation is now JSON-based from the API.
     - Renders `manifest.json` using `templates/workshop_manifest.json.j2`.
     - Renders `README.md` for the module using `templates/README.md.j2`.
     - It collects necessary context for templates (workshop number, topic, list of generated .md files).
@@ -152,7 +153,7 @@ Directory: `templates/`
 1. **CLI** parses args & loads config  
 2. **Orchestrator** sequences agents
 3. **ResearchAgent** → paths to unstructured data files
-4. **CompilerAgent** → uses Codex (via `workshop_compiler_agent_prompt.md`) to generate `.md` content files, then uses Jinja2 templates for `manifest.json` & `README.md` → path to complete workshop module
+4. **CompilerAgent** → uses OpenAI Chat Completions API (via `workshop_compiler_agent_prompt.md` and structured messages) to generate JSON content, then parses JSON and writes files → path to complete workshop module
 5. **GitAgent** → branch, commit, PR
 
 ## 7. Error Handling & Logging
@@ -164,7 +165,7 @@ Directory: `templates/`
 ## 8. Security & Best Practices
 
 - **.env** file (never committed) for secrets  
-- Codex CLI sandboxed via Docker/Seatbelt  
+- OpenAI API integration
 - Limit GitHub token scope (`repo`, `pull_request`)  
 - Validate all external input (topic slug sanitation)  
 

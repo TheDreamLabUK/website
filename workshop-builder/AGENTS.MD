@@ -2,14 +2,14 @@
 
 ## Project Overview
 
-Workshop Builder is an advanced multi-agent orchestration system built on the **OpenAI Codex Framework** for automated workshop content generation. The system integrates Gemini Flash 2.5 for deep research with OpenAI Codex CLI for professional content generation, creating enterprise-level workshop modules that integrate seamlessly with existing infrastructure.
+Workshop Builder is an advanced multi-agent orchestration system built on the **OpenAI API integration** for automated workshop content generation. The system integrates Gemini Flash 2.5 for deep research with OpenAI Chat Completions API for professional content generation, creating enterprise-level workshop modules that integrate seamlessly with existing infrastructure.
 
-## OpenAI Codex Framework Integration
+## OpenAI API integration Integration
 
-This project implements actual OpenAI Codex CLI integration following framework best practices:
+This project implements actual OpenAI Chat Completions API integration following framework best practices:
 
 ### Core Principles
-- **Direct Codex CLI Integration**: Real command-line interface integration with OpenAI Codex
+- **Direct OpenAI API Integration**: Real command-line interface integration with OpenAI Codex
 - **Professional Standards**: Enterprise-level output with comprehensive validation
 - **AGENTS.MD Guidance**: Project-specific AI guidance throughout the system
 - **Comprehensive Error Handling**: Robust error management with cascading recovery
@@ -17,7 +17,7 @@ This project implements actual OpenAI Codex CLI integration following framework 
 
 ### Agent Architecture
 1. **ResearchAgent**: Gemini Flash 2.5 API integration for comprehensive research
-2. **CompilerAgent**: OpenAI Codex CLI integration for professional content generation
+2. **CompilerAgent**: OpenAI Chat Completions API integration for professional content generation
 3. **GitAgent**: Professional GitHub workflow with comprehensive PR descriptions
 4. **Orchestrator**: Codex framework coordination with advanced error handling
 
@@ -31,7 +31,7 @@ This project implements actual OpenAI Codex CLI integration following framework 
 - **Integration Standards**: Follow Codex framework logging and error reporting
 
 ### For CompilerAgent (`agents/compiler_agent.py`)
-- **OpenAI Codex CLI Integration**: Use actual `subprocess` calls to Codex CLI
+- **OpenAI Chat Completions API Integration**: Use direct API calls to generate structured JSON content
 - **AGENTS.MD Support**: Load and integrate project-specific guidance from this file
 - **Fallback Generation**: Implement intelligent fallback when Codex CLI unavailable
 - **Professional Validation**: Comprehensive content validation and error checking
@@ -138,7 +138,7 @@ This project implements actual OpenAI Codex CLI integration following framework 
 - **Modular Architecture**: Maintain modular design for easy extension
 - **Plugin System**: Consider plugin architecture for additional functionality
 - **API Expansion**: Expand API integration capabilities
-- **Framework Evolution**: Stay current with OpenAI Codex Framework developments
+- **API Updates**: Stay current with OpenAI API integration developments
 
 ## Review and Maintenance
 
@@ -151,7 +151,7 @@ This project implements actual OpenAI Codex CLI integration following framework 
 ### Continuous Improvement
 - **Feedback Integration**: Incorporate user feedback for system improvements
 - **Performance Monitoring**: Monitor system performance and optimization opportunities
-- **Framework Updates**: Stay current with OpenAI Codex Framework updates
+- **Framework Updates**: Stay current with OpenAI API integration updates
 - **Best Practice Evolution**: Continuously evolve best practices based on experience
 
 ---

@@ -48,10 +48,10 @@ When you run the command, the Workshop Builder will execute the following orches
 3.  **Compilation Phase (`CompilerAgent`):**
     *   The `Orchestrator` passes the topic and the paths to the researched data files to the `CompilerAgent`.
     *   The `CompilerAgent` determines the next available workshop number and creates a new directory for the module (e.g., `public/data/workshops/workshop-XX-your-topic-slug/`).
-    *   It then invokes its configured AI model (e.g., Codex via CLI or API), using the detailed instructions from [`workshop_compiler_agent_prompt.md`](../workshop_compiler_agent_prompt.md) to:
+    *   It then invokes the OpenAI Chat Completions API, using structured messages and the detailed instructions from [`workshop_compiler_agent_prompt.md`](../workshop_compiler_agent_prompt.md) to:
         *   Analyze the research data.
-        *   Generate the content for individual markdown files (`00_introduction.md`, `01_*.md`, etc.) within the new module directory.
-    *   After the AI generates the content files, the `CompilerAgent` uses Jinja2 templates to create the `manifest.json` and `README.md` for the module.
+        *   Generate a structured JSON object containing the content for all workshop files.
+    *   After the AI generates the JSON response, the `CompilerAgent` parses it and writes the individual files (`00_introduction.md`, `01_*.md`, `manifest.json`, `README.md`, etc.) into the new module directory.
     *   Log messages will indicate the progress of content generation and file creation.
 
 4.  **Publishing Phase (`GitAgent`):**
@@ -85,8 +85,8 @@ python workshop-builder/cli.py --topic "Understanding Kubernetes" --verbose
 2.  Raw data is saved to `workshop-builder/temp_research_data/`.
 3.  `CompilerAgent` is invoked. It sees the next workshop number is, for example, `05`.
 4.  It creates `public/data/workshops/workshop-05-understanding-kubernetes/`.
-5.  Codex (guided by the prompt) generates `00_introduction.md`, `01_what_is_kubernetes.md`, etc., inside this new directory.
-6.  `CompilerAgent` then creates `manifest.json` and `README.md` in the same directory using templates.
+5.  The OpenAI API (guided by the prompt and structured messages) generates a JSON object containing all workshop content.
+6.  `CompilerAgent` then parses this JSON and creates `00_introduction.md`, `01_what_is_kubernetes.md`, `manifest.json`, `README.md`, etc., inside this new directory.
 7.  `GitAgent` creates a branch `workshop-05-understanding-kubernetes`.
 8.  It adds, commits, and pushes the contents of `public/data/workshops/workshop-05-understanding-kubernetes/`.
 9.  It opens a PR titled `[Workshop] Add Workshop 05: Understanding Kubernetes`.
@@ -99,4 +99,4 @@ python workshop-builder/cli.py --topic "Understanding Kubernetes" --verbose
 *   **Git Environment:** The `GitAgent` performs local Git operations. Ensure the `workshop-builder` project is within a clone of the target repository structure, or that the `GitAgent` is robust enough to handle different execution contexts (currently, it assumes execution from within the project that contains the target `WORKSHOPS_BASE_DIR`).
 *   **Execution Time:** Generating a full workshop can take several minutes, depending on the complexity of the topic and the responsiveness of the AI models. Use `--verbose` to monitor progress.
 
-Next: [The Codex Compiler Agent](./05_codex_compiler_agent.md)
+Next: [The OpenAI API Compiler Agent](./05_codex_compiler_agent.md)
