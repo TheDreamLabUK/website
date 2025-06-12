@@ -182,22 +182,22 @@ sequenceDiagram
 ```mermaid
 graph TB
     %% Input/Output
-    INPUT[🎯 CLI Input<br/>Workshop Topic]
-    OUTPUT[🎉 CLI Output<br/>PR URL & Results]
+    INPUT[🎯 CLI Input<br>Workshop Topic]
+    OUTPUT[🎉 CLI Output<br>PR URL &amp; Results]
     
     %% Orchestrator Container
     subgraph ORCH [🎭 Orchestrator]
         direction TB
         
         %% Agent Coordination
-        COORD[🎛️ Agent Coordinator<br/>Workflow Management]
+        COORD[🎛️ Agent Coordinator<br>Workflow Management]
         
         %% Specialized Agents
         subgraph AGENTS [Specialized AI Agents]
             direction LR
-            RA[🔍 ResearchAgent<br/>Deep Research]
-            CA[⚙️ CompilerAgent<br/>OpenAI API]
-            GA[📦 GitAgent<br/>Version Control]
+            RA[🔍 ResearchAgent<br>Deep Research]
+            CA[⚙️ CompilerAgent<br>OpenAI API]
+            GA[📦 GitAgent<br>Version Control]
         end
         
         %% Internal Flow
@@ -210,29 +210,29 @@ graph TB
     %% External Services
     subgraph EXT [🌐 External Services]
         direction TB
-        GEMINI[🧠 Gemini Flash 2.5<br/>Research API]
-        OPENAI_API[🤖 OpenAI API<br/>Content Generation]
-        GITHUB[🔗 GitHub API<br/>Repository Management]
+        GEMINI[🧠 Gemini Flash 2.5<br>Research API]
+        OPENAI_API[🤖 OpenAI API<br>Content Generation]
+        GITHUB[🔗 GitHub API<br>Repository Management]
     end
     
     %% Data Flow
     INPUT --> ORCH
     ORCH --> OUTPUT
     
-    %% Agent-Service Connections
-    RA -.->|Research Queries| GEMINI
-    GEMINI -.->|Research Data| RA
+    %% Agent-Service Connections (now all solid arrows)
+    RA -->|Research Queries| GEMINI
+    GEMINI -->|Research Data| RA
     
-    CA -.->|API Call (JSON)| OPENAI_API
-    OPENAI_API -.->|JSON Response| CA
+    CA -->|API Call JSON| OPENAI_API
+    OPENAI_API -->|JSON Response| CA
     
-    GA -.->|Git Operations| GITHUB
-    GITHUB -.->|PR Metadata| GA
+    GA -->|Git Operations| GITHUB
+    GITHUB -->|PR Metadata| GA
     
     %% Data Annotations
-    RA -->|📄 Research Data<br/>Structured Files| CA
-    CA -->|📚 Workshop Module<br/>Complete Package| GA
-    GA -->|🔗 PR URL<br/>Success Report| COORD
+    RA -->|📄 Research Data<br>Structured Files| CA
+    CA -->|📚 Workshop Module<br>Complete Package| GA
+    GA -->|🔗 PR URL<br>Success Report| COORD
     
     %% Styling
     classDef input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
