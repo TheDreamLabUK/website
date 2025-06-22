@@ -1,0 +1,58 @@
+{
+  "id": "workshop-02-morning-ai-api-access",
+  "version": "1.0.0",
+  "metadata": {
+    "title": "Direct AI API Access",
+    "moduleNumber": "07",
+    "duration": "3 hours",
+    "difficulty": "intermediate",
+    "tags": ["ai", "automation", "productivity"],
+    "lastUpdated": "2025-06-22T09:52:21Z"
+  },
+  "structure": {
+    "sections": [
+      {
+        "id": "introduction",
+        "title": "Introduction",
+        "path": "00_introduction.md",
+        "duration": "15 minutes"
+      },
+      {
+        "id": "concepts",
+        "title": "Core Concepts",
+        "path": "01_concepts.md",
+        "duration": "45 minutes"
+      },
+      {
+        "id": "hands-on",
+        "title": "Hands-On Practice",
+        "path": "02_hands_on.md",
+        "duration": "60 minutes"
+      },
+      {
+        "id": "exercises",
+        "title": "Guided Exercises",
+        "path": "03_exercises.md",
+        "duration": "45 minutes"
+      },
+      {
+        "id": "project",
+        "title": "Project Application",
+        "path": "04_project.md",
+        "duration": "30 minutes"
+      },
+      {
+        "id": "assessment",
+        "title": "Knowledge Check",
+        "path": "05_assessment.md",
+        "duration": "15 minutes"
+      },
+      {
+        "id": "resources",
+        "title": "Additional Resources",
+        "path": "06_resources.md",
+        "duration": "self-paced"
+      }
+    ]
+  }
+}
